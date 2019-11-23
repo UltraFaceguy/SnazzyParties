@@ -1,88 +1,110 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-    <modelVersion>4.0.0</modelVersion>
+<!--
 
-    <parent>
-        <groupId>io.pixeloutlaw</groupId>
-        <artifactId>spigot-plugin-parent</artifactId>
-        <version>1.12.2.0</version>
-    </parent>
+    The MIT License
+    Copyright © 2018 Pixel Outlaw
 
-    <artifactId>TogglePickups</artifactId>
-    <version>1.0.0</version>
-    <packaging>jar</packaging>
+    Permission is hereby granted, free of charge, to any person obtaining a copy
+    of this software and associated documentation files (the "Software"), to deal
+    in the Software without restriction, including without limitation the rights
+    to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+    copies of the Software, and to permit persons to whom the Software is
+    furnished to do so, subject to the following conditions:
 
-    <name>TogglePickups</name>
+    The above copyright notice and this permission notice shall be included in
+    all copies or substantial portions of the Software.
 
-    <inceptionYear>2018</inceptionYear>
+    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+    IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+    FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+    AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+    OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+    THE SOFTWARE.
 
-    <scm>
-        <connection>scm:git:https://github.com/UltraFaceguy/toggle-pickups.git</connection>
-        <developerConnection>scm:git:https://github.com/UltraFaceguy/toggle-pickups.git</developerConnection>
-        <url>https://github.com/UltraFaceguy/toggle-pickups.git</url>
-        <tag>HEAD</tag>
-    </scm>
+-->
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
 
-    <repositories>
-        <repository>
-            <id>spigot-repo</id>
-            <url>https://hub.spigotmc.org/nexus/content/repositories/snapshots/</url>
-        </repository>
-    </repositories>
+  <parent>
+    <groupId>io.pixeloutlaw</groupId>
+    <artifactId>spigot-plugin-parent</artifactId>
+    <version>1.14.4.2</version>
+  </parent>
 
-    <dependencies>
-        <dependency>
-            <groupId>org.spigotmc</groupId>
-            <artifactId>spigot-api</artifactId>
-            <version>1.12.2-R0.1-SNAPSHOT</version>
-            <scope>provided</scope>
-        </dependency>
-    </dependencies>
+  <artifactId>TogglePickups</artifactId>
+  <version>1.0.1</version>
+  <packaging>jar</packaging>
 
-    <build>
-        <defaultGoal>install</defaultGoal>
-        <resources>
-            <resource>
-                <targetPath>.</targetPath>
-                <directory>${project.basedir}/src/main/resources</directory>
-                <filtering>true</filtering>
-            </resource>
-        </resources>
+  <name>TogglePickups</name>
+
+  <inceptionYear>2018</inceptionYear>
+
+  <scm>
+    <connection>scm:git:https://github.com/UltraFaceguy/toggle-pickups.git</connection>
+    <developerConnection>scm:git:https://github.com/UltraFaceguy/toggle-pickups.git
+    </developerConnection>
+    <url>https://github.com/UltraFaceguy/toggle-pickups.git</url>
+    <tag>HEAD</tag>
+  </scm>
+
+  <repositories>
+    <repository>
+      <id>spigot-repo</id>
+      <url>https://hub.spigotmc.org/nexus/content/repositories/snapshots/</url>
+    </repository>
+  </repositories>
+
+  <dependencies>
+    <dependency>
+      <groupId>org.spigotmc</groupId>
+      <artifactId>spigot-api</artifactId>
+    </dependency>
+  </dependencies>
+
+  <build>
+    <defaultGoal>install</defaultGoal>
+    <resources>
+      <resource>
+        <targetPath>.</targetPath>
+        <directory>${project.basedir}/src/main/resources</directory>
+        <filtering>true</filtering>
+      </resource>
+    </resources>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <version>3.3</version>
+        <configuration>
+          <source>${project.build.javaVersion}</source>
+          <target>${project.build.javaVersion}</target>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+
+  <properties>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <project.build.javaVersion>1.8</project.build.javaVersion>
+  </properties>
+
+  <profiles>
+    <profile>
+      <id>java8-disable-doclint</id>
+      <activation>
+        <jdk>[1.8,</jdk>
+      </activation>
+      <build>
         <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.3</version>
-                <configuration>
-                    <source>${project.build.javaVersion}</source>
-                    <target>${project.build.javaVersion}</target>
-                </configuration>
-            </plugin>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-javadoc-plugin</artifactId>
+          </plugin>
         </plugins>
-    </build>
-
-    <properties>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <project.build.javaVersion>1.8</project.build.javaVersion>
-    </properties>
-
-    <profiles>
-        <profile>
-            <id>java8-disable-doclint</id>
-            <activation>
-                <jdk>[1.8,</jdk>
-            </activation>
-            <build>
-                <plugins>
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-javadoc-plugin</artifactId>
-                        <configuration>
-                            <additionalparam>-Xdoclint:none</additionalparam>
-                        </configuration>
-                    </plugin>
-                </plugins>
-            </build>
-        </profile>
-    </profiles>
+      </build>
+    </profile>
+  </profiles>
 
 </project>
