@@ -25,7 +25,8 @@ public class GenericCommand implements CommandExecutor {
     }
 
     if (cmd.getLabel().equalsIgnoreCase("REEEEEEEEEEEEEE")) {
-      //epic gaming
+      // epic gaming
+      // example pull request
     }
     return true;
   }
