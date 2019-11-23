@@ -33,19 +33,17 @@
     <version>1.14.4.2</version>
   </parent>
 
-  <artifactId>TogglePickups</artifactId>
-  <version>1.0.1</version>
+  <artifactId>SnazzyParties</artifactId>
+  <version>1.0.0</version>
   <packaging>jar</packaging>
 
-  <name>TogglePickups</name>
+  <name>SnazzyParties</name>
 
   <inceptionYear>2018</inceptionYear>
 
   <scm>
-    <connection>scm:git:https://github.com/UltraFaceguy/toggle-pickups.git</connection>
-    <developerConnection>scm:git:https://github.com/UltraFaceguy/toggle-pickups.git
-    </developerConnection>
-    <url>https://github.com/UltraFaceguy/toggle-pickups.git</url>
+    <connection>https://github.com/UltraFaceguy/SnazzyParties.git</connection>
+    <url>https://github.com/UltraFaceguy/SnazzyParties</url>
     <tag>HEAD</tag>
   </scm>
 
