@@ -38,9 +38,6 @@ public class PartyCommands implements CommandExecutor {
     String arg = args[0].toLowerCase();
 
     switch (arg){
-      case "forceadd":
-        Player forcedadd = (Player) Bukkit.getOfflinePlayer(args[1]);
-        partyManager.addPlayer(partyManager.getParty(player), forcedadd);
       case "create":
         if (!partyManager.hasParty(player)){
           partyManager.createParty(player);
@@ -77,6 +74,28 @@ public class PartyCommands implements CommandExecutor {
         }
         player.sendMessage("Only party leader can run this command");
         return false;
+      case "join":
+        if (partyCheck(player)){
+          player.sendMessage("You're already in a party");
+          return true;
+        }
+        if (partyManager.invitations.get(player.getUniqueId()) != null) {
+          partyManager.addPlayer(partyManager.invitations.get(player.getUniqueId()), player);
+        }
+        else {
+          player.sendMessage("You were not invited to any parties");
+        }
+      case "accept":
+        if (partyCheck(player)){
+          player.sendMessage("You're already in a party");
+          return true;
+        }
+        if (partyManager.invitations.get(player.getUniqueId()) != null) {
+          partyManager.addPlayer(partyManager.invitations.get(player.getUniqueId()), player);
+        }
+        else {
+          player.sendMessage("You were not invited to any parties");
+        }
       case "kick":
         if (!partyCheck(player)){
           return true;

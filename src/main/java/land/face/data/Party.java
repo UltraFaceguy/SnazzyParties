@@ -1,26 +1,25 @@
 package land.face.data;
 
-import land.face.managers.SnazzyPartiesTimer;
+import land.face.utils.Timer;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.scoreboard.Scoreboard;
 
 import java.util.List;
-import java.util.UUID;
 
 public class Party {
 
-    private UUID leader;
-    private List<UUID> members;
+    private PartyMember leader;
+    private List<PartyMember> members;
 
     private Boolean friendlyFire;
     private Boolean expSharing;
     private Boolean lootSharing;
 
     private Scoreboard scoreboard;
-    private SnazzyPartiesTimer timer;
+    private Timer timer;
 
-    private final int MAX_PLAYERS = 8;
+    private final int MAX_PLAYERS = 5;
     private static final String PREFIX = ChatColor.LIGHT_PURPLE + "<" + ChatColor.BOLD + "P" + ChatColor.LIGHT_PURPLE + "> " + ChatColor.GRAY;
 
     public enum RemoveReasons {
@@ -36,8 +35,8 @@ public class Party {
         }
     }
 
-    public Party(Player leader, List<UUID> members, Scoreboard scoreboard) {
-        this.leader = leader.getUniqueId();
+    public Party(PartyMember leader, List<PartyMember> members, Scoreboard scoreboard) {
+        this.leader = leader;
         this.members = members;
         this.friendlyFire = false;
         this.expSharing = false;
@@ -45,23 +44,23 @@ public class Party {
         this.scoreboard = scoreboard;
     }
 
-    public UUID getLeader() {
+    public PartyMember getLeader() {
         return leader;
     }
 
     public void setLeader(Player newLeader) {
-        setLeader(newLeader.getUniqueId());
+        setLeader(new PartyMember(newLeader));
     }
 
-    public void setLeader(UUID newLeader) {
+    public void setLeader(PartyMember newLeader) {
         leader = newLeader;
     }
 
-    public List<UUID> getMembers() {
+    public List<PartyMember> getMembers() {
         return members;
     }
 
-    public void setMembers(List<UUID> newMembers) {
+    public void setMembers(List<PartyMember> newMembers) {
         members = newMembers;
     }
 
@@ -93,11 +92,12 @@ public class Party {
         scoreboard = newScoreboard;
     }
 
-    public SnazzyPartiesTimer getTimer() {
+    public Timer getTimer() {
         return timer;
     }
 
-    public void setTimer(SnazzyPartiesTimer newTimer) {
+    @Deprecated
+    public void setTimer(Timer newTimer) {
         timer = newTimer;
         timer.run();
     }
