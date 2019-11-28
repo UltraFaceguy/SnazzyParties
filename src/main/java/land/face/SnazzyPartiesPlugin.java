@@ -7,7 +7,6 @@ import land.face.listeners.PlayerQuitListener;
 import land.face.managers.SnazzyPartiesManager;
 import org.bukkit.Bukkit;
 import org.bukkit.event.HandlerList;
-import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public class SnazzyPartiesPlugin extends JavaPlugin {
@@ -35,6 +34,7 @@ public class SnazzyPartiesPlugin extends JavaPlugin {
   public void onDisable() {
     HandlerList.unregisterAll(this);
     Bukkit.getScheduler().cancelTasks(this);
+    snazzyPartiesManager.parties.forEach(party -> snazzyPartiesManager.disbandParty(party));
     Bukkit.getServer().getLogger().info("Snazzy Parties disabled!");
   }
 

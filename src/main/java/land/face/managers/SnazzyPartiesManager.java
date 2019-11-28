@@ -2,8 +2,10 @@ package land.face.managers;
 
 import land.face.SnazzyPartiesPlugin;
 import land.face.data.Party;
+import land.face.data.PartyMember;
+import land.face.utils.Text;
+import land.face.utils.Timer;
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.scoreboard.*;
 
@@ -16,24 +18,26 @@ public class SnazzyPartiesManager {
 
     public List<Party> parties = new CopyOnWriteArrayList<>();
     public HashMap<UUID, Party> invitations = new HashMap<>();
-    public HashMap<UUID, Integer> scoreboardHealth = new HashMap<UUID, Integer>();
+    public HashMap<UUID, String> scoreboardHealth = new HashMap<UUID, String>();
+    public String[] list = new String[6];
 
     public SnazzyPartiesManager(SnazzyPartiesPlugin plugin){
         this.plugin = plugin;
     }
 
+    @Deprecated
     public void createParty(Player player){
-        Party party = new Party(player, new ArrayList<>(), setupScoreboard());
+        Party party = new Party(new PartyMember(player), new ArrayList<>(), setupScoreboard());
         parties.add(party);
         addPlayer(party, player);
-        SnazzyPartiesTimer timer = new SnazzyPartiesTimer(party);
+        Timer timer = new Timer(party);
         party.setTimer(timer);
         player.sendMessage("Congrats boss you've created a party");
     }
 
     public void disbandParty(Party party){
         systemSendMessage(party, "Your party has been disbanded");
-        getOnlinePartyMembers(party).forEach(player -> removePlayerScoreboard(player));
+        getOnlinePartyMembers(party).forEach(player ->  Bukkit.getPlayer(player.getUsername()).setScoreboard(Bukkit.getScoreboardManager().getNewScoreboard()));
         party.getTimer().cancel();
         parties.remove(party);
     }
@@ -47,7 +51,7 @@ public class SnazzyPartiesManager {
         if (party.getPartySize() >= party.getMaxPartySize()){
             return;
         }
-        party.getMembers().add(target.getUniqueId());
+        party.getMembers().add(new PartyMember(target));
         addToScoreboard(target);
     }
 
@@ -61,17 +65,17 @@ public class SnazzyPartiesManager {
             disbandParty(party);
             return;
         }
-        if (party.getLeader() == target.getUniqueId()){
+        if (party.getLeader().getUUID() == target.getUniqueId()){
             promoteNextInLine(party);
-            party.getMembers().remove(target.getUniqueId());
-            removePlayerScoreboard(target);
-            systemSendMessage(party,party.getPrefix() + target + reason.getMessage());
-            systemSendMessage(party, party.getPrefix() + target + " is now the leader of the party!");
+            systemSendMessage(party,party.getPrefix() + target.getName() + reason.getMessage());
+            systemSendMessage(party, party.getPrefix() + target.getName() + " is now the leader of the party!");
             return;
         }
+        else {
+            systemSendMessage(party,target.getName() + reason.getMessage());
+        }
         removePlayerScoreboard(target);
-        party.getMembers().remove(target.getUniqueId());
-        systemSendMessage(party,target + reason.getMessage());
+        party.getMembers().removeIf(partyMember -> partyMember.getUsername().equals(target.getName()));
     }
 
     public void invitePlayer(Player cmdSender, Player target){
@@ -88,31 +92,34 @@ public class SnazzyPartiesManager {
             return;
         }
         invitations.put(target.getUniqueId(), party);
-        target.sendMessage("You've been invited to " + Bukkit.getPlayer(party.getLeader()).getDisplayName() + "'s party");
+        target.sendMessage("You've been invited to " + party.getLeader().getUsername() + "'s party");
     }
 
     public void sendMessage(Player cmdSender, String message){
         Party party = getParty(cmdSender);
-        for (Player player : getOnlinePartyMembers(party)){
-            player.sendMessage(party.getPrefix() + cmdSender.getDisplayName() + ": " + message);
+        for (PartyMember player : getOnlinePartyMembers(party)){
+            Bukkit.getPlayer(player.getUsername()).sendMessage(party.getPrefix() + cmdSender.getDisplayName() + ": " + message);
         }
     }
 
     public void systemSendMessage(Party party, String message){
-        for (Player player : getOnlinePartyMembers(party)){
-            player.sendMessage(party.getPrefix() + message);
+        for (PartyMember player : getOnlinePartyMembers(party)){
+            Bukkit.getPlayer(player.getUsername()).sendMessage(party.getPrefix() + message);
         }
     }
 
-    public List<Player> getOnlinePartyMembers(Player player) {
+    public List<PartyMember> getOnlinePartyMembers(Player player) {
         return getOnlinePartyMembers(getParty(player));
     }
 
-    public List<Player> getOnlinePartyMembers(Party party) {
-        ArrayList<Player> list = new ArrayList<>();
-        for (UUID uuid : party.getMembers()){
-            if (Bukkit.getServer().getPlayer(uuid) != null){
-                list.add(Bukkit.getPlayer(uuid));
+    /*
+     * Change return to PartyMember
+     */
+    public List<PartyMember> getOnlinePartyMembers(Party party) {
+        ArrayList<PartyMember> list = new ArrayList<>();
+        for (PartyMember member : party.getMembers()){
+            if (Bukkit.getServer().getPlayer(member.getUUID()) != null){
+                list.add(member);
             }
         }
         return list;
@@ -120,8 +127,10 @@ public class SnazzyPartiesManager {
 
     public Party getParty(Player player){
         for (Party party : parties){
-            if (party.getMembers().contains(player.getUniqueId())){
-                return party;
+            for (PartyMember member : party.getMembers()) {
+                if (member.getUUID() == player.getUniqueId()){
+                    return party;
+                }
             }
         }
         return null;
@@ -133,14 +142,14 @@ public class SnazzyPartiesManager {
 
     public void promotePlayer(Player player){
         getParty(player).setLeader(player);
-        systemSendMessage(getParty(player), "ayo " + player + " has been promoted to leader!");
+        systemSendMessage(getParty(player), "ayo " + player.getName() + " has been promoted to leader!");
     }
 
     public void promoteNextInLine(Party party){
-        UUID currentLeader = party.getLeader();
-        for (UUID uuid : party.getMembers()) {
-            if (uuid != currentLeader){
-                promotePlayer(Bukkit.getPlayer(uuid));
+        UUID currentLeader = party.getLeader().getUUID();
+        for (PartyMember member : party.getMembers()) {
+            if (member.getUUID() != currentLeader){
+                party.setLeader(member);
                 return;
             }
         }
@@ -150,7 +159,7 @@ public class SnazzyPartiesManager {
         if (!hasParty(player)){
             return false;
         }
-        return getParty(player).getLeader() == player.getUniqueId();
+        return getParty(player).getLeader().getUUID() == player.getUniqueId();
     }
 
     public Boolean areInSameParty(Player p1, Player p2){
@@ -169,8 +178,7 @@ public class SnazzyPartiesManager {
     @Deprecated
     public void addToScoreboard(Player player) {
         Scoreboard scoreboard = getParty(player).getScoreboard();
-        Objective objective = scoreboard.getObjective(DisplaySlot.SIDEBAR);
-        //objective.getScore(player).setScore((int) Math.round(player.getHealth()));
+        scoreboard.getObjective(DisplaySlot.SIDEBAR);
         player.setScoreboard(scoreboard);
         updateScoreboard(player);
     }
@@ -180,55 +188,119 @@ public class SnazzyPartiesManager {
         updateScoreboard(getParty(player));
     }
 
+    /**
+     * Bold for Leader
+     * Grey for offline
+     * Something to remove people who left party
+     *
+     * Store player names somewhere
+     */
     @Deprecated
     public void updateScoreboard(Party party) {
         int i = party.getMaxPartySize() * 2;
         Scoreboard scoreboard = party.getScoreboard();
         Objective objective = scoreboard.getObjective("objective");
+
+        for (PartyMember member : party.getMembers()) {
+            String healthTag = String.valueOf(i/2).replaceAll("([0-9])", "&$1"); //HP Tag
+            String usernameTag = String.valueOf(i).replaceAll("([0-9])", "&$1&r"); //Usr Tag
+            boolean online = false;
+            Integer value = null;
+            Player player = null;
+            if (Bukkit.getPlayer(member.getUsername()) != null){
+                online = true;
+                player = Bukkit.getPlayer(member.getUsername());
+                value = (int) Math.round(player.getHealth());
+            }
+
+            //Decides player's scoreboard naming coloring
+            StringBuilder nameFormat = new StringBuilder();
+            if (!online) {
+                nameFormat.append("&7");
+            }
+            else {
+                nameFormat.append("&f");
+            }
+            if (party.getLeader().getUUID() == member.getUUID()){
+                nameFormat.append("&l");
+            }
+
+            nameFormat.append(member.getUsername());
+
+            if (member.getScoreboardUsername() != null) {
+                scoreboard.resetScores(Text.colorize(member.getScoreboardUsername()));
+            }
+            objective.getScore(Text.colorize(nameFormat.toString())).setScore(i);
+            member.setScoreboardUsername(nameFormat.toString());
+
+            if (member.getScoreboardHP() != null) {
+                scoreboard.resetScores(Text.colorize(member.getScoreboardHP()));
+            }
+
+            if (value == null) {
+                objective.getScore(Text.colorize(member.getScoreboardHP())).setScore(i-1);
+            }
+            else {
+                String health = healthTag + "&c" + value + " ❤";
+                objective.getScore(Text.colorize(health)).setScore(i-1);
+                member.setScoreboardHP(health);
+            }
+
+            if (online){
+                player.setScoreboard(scoreboard);
+            }
+            i = i-2;
+        }
+
+        /*
+        for (int j = 0 ; j < 5 ; j++) {
+            String str = String.valueOf(i/2).replaceAll("([0-9])", "&$1"); //HP Tag
+            String str2 = String.valueOf(i).replaceAll("([0-9])", "&$1&r"); //Usr Tag
+            if (list[j] != null) {
+                scoreboard.resetScores(Text.colorize(list[j]));
+            }
+            objective.getScore(Text.colorize(str2 + player.getName())).setScore(i);
+            String string = str + "&c" + value + " ❤";
+            objective.getScore(Text.colorize(string)).setScore(i-1);
+            player.setScoreboard(scoreboard);
+            i = i - 2;
+            list[j] = string;
+        }
+         */
+
+        /*
         for (Player player : getOnlinePartyMembers(party)) {
+            StringBuilder str = new StringBuilder().append("&").append(i/2);
             if (scoreboardHealth.get(player.getUniqueId()) != null) {
-                scoreboard.resetScores(ChatColor.RED + String.valueOf(scoreboardHealth.get(player.getUniqueId())) + " ❤");
+                scoreboard.resetScores(Text.colorize(str + "&c" + String.valueOf(scoreboardHealth.get(player.getUniqueId())) + " ❤"));
             }
             objective.getScore(player).setScore(i);
             int value = (int) Math.round(player.getHealth());
             scoreboardHealth.put(player.getUniqueId(), value);
-            objective.getScore(ChatColor.RED + String.valueOf(value) + " ❤").setScore(i-1);
+            objective.getScore(Text.colorize(str + "&c" + String.valueOf(scoreboardHealth.get(player.getUniqueId())) + " ❤")).setScore(i-1);
             player.setScoreboard(scoreboard);
             i = i - 2;
         }
+         */
     }
 
-    @Deprecated
-    public void changeScoreboardLeader(Player newLeader) {
-
-        int i = getParty(newLeader).getMaxPartySize() * 2;
-        Party party = getParty(newLeader);
-        Scoreboard scoreboard = party.getScoreboard();
-        Objective objective = scoreboard.getObjective("objective");
-        for (Player player : getOnlinePartyMembers(party)) {
-            if (player == newLeader) {
-                scoreboard.resetScores(player);
-                objective.getScore(ChatColor.BOLD + player.getName()).setScore(i);
-            }
-            else if (player == Bukkit.getPlayer(party.getLeader())) {
-                scoreboard.resetScores(player);
-                objective.getScore(player.getName()).setScore(i);
-            }
-            else if (player != newLeader && player != Bukkit.getPlayer(party.getLeader())){
-                objective.getScore(player).setScore(i);
-            }
-            if (scoreboardHealth.get(player.getUniqueId()) != null) {
-                scoreboard.resetScores(ChatColor.RED + String.valueOf(scoreboardHealth.get(player.getUniqueId())) + " ❤");
-            }
-            objective.getScore(player).setScore(i);
-            int value = (int) Math.round(player.getHealth());
-            scoreboardHealth.put(player.getUniqueId(), value);
-            objective.getScore(ChatColor.RED + String.valueOf(value) + " ❤").setScore(i-1);
-            i = i - 2;
-        }
+    public void resetScoreboard(Party party) {
+        party.setScoreboard(setupScoreboard());
+        getOnlinePartyMembers(party).forEach(partyMember -> addToScoreboard(Bukkit.getPlayer(partyMember.getUsername())));
     }
 
     public void removePlayerScoreboard(Player player) {
+        Party party = getParty(player);
+        Scoreboard scoreboard = party.getScoreboard();
+
+        for (PartyMember member : party.getMembers()) {
+            if (member.getUsername().equals(player.getName())){
+                scoreboard.resetScores(member.getScoreboardHP());
+                scoreboard.resetScores(member.getScoreboardUsername());
+            }
+        }
+
+        getOnlinePartyMembers(party).forEach(player1 -> Bukkit.getPlayer(player1.getUsername()).setScoreboard(scoreboard));
         player.setScoreboard(Bukkit.getScoreboardManager().getNewScoreboard());
     }
 
