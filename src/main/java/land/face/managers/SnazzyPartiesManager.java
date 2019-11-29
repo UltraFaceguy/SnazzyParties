@@ -112,9 +112,6 @@ public class SnazzyPartiesManager {
         return getOnlinePartyMembers(getParty(player));
     }
 
-    /*
-     * Change return to PartyMember
-     */
     public List<PartyMember> getOnlinePartyMembers(Party party) {
         ArrayList<PartyMember> list = new ArrayList<>();
         for (PartyMember member : party.getMembers()){
@@ -169,7 +166,6 @@ public class SnazzyPartiesManager {
     @Deprecated
     public Scoreboard setupScoreboard() {
         Scoreboard scoreboard = Bukkit.getScoreboardManager().getNewScoreboard();
-        Team team = scoreboard.registerNewTeam("Party");
         Objective objective = scoreboard.registerNewObjective("objective", "dummy", "Party");
         objective.setDisplaySlot(DisplaySlot.SIDEBAR);
         return scoreboard;
@@ -206,11 +202,9 @@ public class SnazzyPartiesManager {
             String usernameTag = String.valueOf(i).replaceAll("([0-9])", "&$1&r"); //Usr Tag
             boolean online = false;
             Integer value = null;
-            Player player = null;
             if (Bukkit.getPlayer(member.getUsername()) != null){
                 online = true;
-                player = Bukkit.getPlayer(member.getUsername());
-                value = (int) Math.round(player.getHealth());
+                value = (int) Math.round(Bukkit.getPlayer(member.getUsername()).getHealth());
             }
 
             //Decides player's scoreboard naming coloring
@@ -244,10 +238,6 @@ public class SnazzyPartiesManager {
                 String health = healthTag + "&c" + value + " ❤";
                 objective.getScore(Text.colorize(health)).setScore(i-1);
                 member.setScoreboardHP(health);
-            }
-
-            if (online){
-                player.setScoreboard(scoreboard);
             }
             i = i-2;
         }
@@ -295,8 +285,8 @@ public class SnazzyPartiesManager {
 
         for (PartyMember member : party.getMembers()) {
             if (member.getUsername().equals(player.getName())){
-                scoreboard.resetScores(member.getScoreboardHP());
-                scoreboard.resetScores(member.getScoreboardUsername());
+                scoreboard.resetScores(Text.colorize(member.getScoreboardHP()));
+                scoreboard.resetScores(Text.colorize(member.getScoreboardUsername()));
             }
         }
 
