@@ -56,11 +56,24 @@ public class PartyCommands implements CommandExecutor {
         player.sendMessage("Bro? You're not the leader");
         return true;
       case "invite":
-        if (!partyCheck(player)){
+        if (!partyManager.hasParty(player)){
+          if (args.length < 2) {
+            player.sendMessage("Specify a player to invite");
+            return true;
+          }
+          if (Bukkit.getPlayer(args[1]) != null) {
+            partyManager.createParty(player);
+            partyManager.invitePlayer(player, Bukkit.getPlayer(args[1]));
+            return true;
+          }
           return true;
         }
         if (isLeader){
-          if (Bukkit.getPlayer(args[1]) == null){
+          if (args.length < 2) {
+            player.sendMessage("Specify a player to invite");
+            return true;
+          }
+          if (Bukkit.getPlayer(args[1]) == null) {
             player.sendMessage(args[1] + " is offline");
             return true;
           }
@@ -86,7 +99,7 @@ public class PartyCommands implements CommandExecutor {
           player.sendMessage("You were not invited to any parties");
         }
       case "accept":
-        if (partyCheck(player)){
+        if (partyManager.hasParty(player)){
           player.sendMessage("You're already in a party");
           return true;
         }
@@ -101,6 +114,10 @@ public class PartyCommands implements CommandExecutor {
           return true;
         }
         if (isLeader){
+          if (args.length < 2) {
+            player.sendMessage("Specify a player");
+            return true;
+          }
           if (Bukkit.getPlayer(args[1]) == null){
             player.sendMessage(args[1] + " is offline");
             return true;
@@ -129,12 +146,16 @@ public class PartyCommands implements CommandExecutor {
           return true;
         }
         if (isLeader){
+          if (args.length < 2) {
+            player.sendMessage("Specify a player");
+            return true;
+          }
           Player target = Bukkit.getPlayer(args[1]);
           if (target == player){
             player.sendMessage("BRO? You're the leader already???");
             return true;
           }
-          partyManager.promotePlayer(player);
+          partyManager.promotePlayer(target);
           return true;
         }
         player.sendMessage("Only party leader can run this command");

@@ -23,16 +23,13 @@ public class PlayerQuitListener implements Listener {
         SnazzyPartiesManager manager = plugin.getSnazzyPartiesManager();
         Party party = manager.getParty(e.getPlayer());
 
-        if (manager.hasParty(e.getPlayer())){
-            if (manager.isLeader(e.getPlayer()) && party.getPartySize() > 1){
-                manager.promoteNextInLine(party);
-            }
-        }
-
         new BukkitRunnable() {
             public void run() {
                 if (!e.getPlayer().isOnline()){
                     manager.removePlayer(party, e.getPlayer(), Party.RemoveReasons.TimeOut);
+                    if (!manager.parties.contains(party)){
+                        cancel();
+                    }
                 }
             }
         }.runTaskLater(this.plugin, 600);
