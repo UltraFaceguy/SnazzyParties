@@ -52,6 +52,10 @@
       <id>jitpack.io</id>
       <url>https://jitpack.io</url>
     </repository>
+    <repository>
+      <id>placeholderapi</id>
+      <url>http://repo.extendedclip.com/content/repositories/placeholderapi/</url>
+    </repository>
   </repositories>
 
   <dependencies>
@@ -63,6 +67,12 @@
       <groupId>io.pixeloutlaw</groupId>
       <artifactId>facecore</artifactId>
       <version>1.14.4.1</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>me.clip</groupId>
+      <artifactId>placeholderapi</artifactId>
+      <version>2.10.2</version>
       <scope>provided</scope>
     </dependency>
   </dependencies>

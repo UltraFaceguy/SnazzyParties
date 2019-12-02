@@ -1,0 +1,3 @@
+scoreboard:
+  name-line: "%player_displayname%"
+  info-line: "&c%player_health%❤"
