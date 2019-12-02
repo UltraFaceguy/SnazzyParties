@@ -1,7 +1,7 @@
 package land.face.data;
 
+import land.face.SnazzyPartiesPlugin;
 import land.face.utils.Timer;
-import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.scoreboard.Scoreboard;
 
@@ -20,7 +20,7 @@ public class Party {
     private Timer timer;
 
     private final int MAX_PLAYERS = 5;
-    private static final String PREFIX = ChatColor.LIGHT_PURPLE + "<" + ChatColor.BOLD + "P" + ChatColor.LIGHT_PURPLE + "> " + ChatColor.GRAY;
+    private static final String PREFIX = SnazzyPartiesPlugin.getInstance().getConfig().getString("prefix");
 
     public enum RemoveReasons {
         Quit (" has left the party."),
