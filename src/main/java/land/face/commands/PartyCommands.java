@@ -2,14 +2,18 @@ package land.face.commands;
 
 import land.face.SnazzyPartiesPlugin;
 import land.face.data.Party;
+import land.face.data.PartyMember;
 import land.face.managers.SnazzyPartiesManager;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.command.TabExecutor;
 import org.bukkit.entity.Player;
 
-public class PartyCommands implements CommandExecutor {
+import java.util.ArrayList;
+import java.util.List;
+
+public class PartyCommands implements TabExecutor {
 
   private SnazzyPartiesPlugin plugin;
 
@@ -29,7 +33,7 @@ public class PartyCommands implements CommandExecutor {
     }
 
     if (args.length == 0 ) {
-      player.sendMessage("Invalid Args ... or uh maybe show em the args here?");
+      partyHelp(player);
       return true;
     }
 
@@ -38,6 +42,9 @@ public class PartyCommands implements CommandExecutor {
     String arg = args[0].toLowerCase();
 
     switch (arg){
+      case "help":
+        partyHelp(player);
+        return true;
       case "create":
         if (!partyManager.hasParty(player)){
           partyManager.createParty(player);
@@ -184,11 +191,58 @@ public class PartyCommands implements CommandExecutor {
     return true;
   }
 
-  public boolean partyCheck(Player player) {
+  @Override
+  public List<String> onTabComplete(CommandSender sender, Command cmd, String commandLabel, String[] args) {
+    List<String> list = new ArrayList<>();
+
+    Player player = (Player) sender;
+    SnazzyPartiesManager partyManager = plugin.getSnazzyPartiesManager();
+
+    list.add("help");
+
+    if (!(sender instanceof Player)) {
+      return null;
+    }
+
+    if (args.length > 1) {
+      return null;
+    }
+
+    if (partyManager.hasParty(player)) {
+      Party party = partyManager.getParty(player);
+      PartyMember leader = party.getLeader();
+      if (leader.getUUID() == player.getUniqueId()) {
+        list.add("pvp");
+        list.add("promote");
+        list.add("kick");
+        list.add("invite");
+        list.add("disband");
+        list.add("leave");
+        return list;
+      }
+      else {
+        list.add("leave");
+        return list;
+      }
+    }
+    else {
+      list.add("create");
+      list.add("accept");
+      list.add("invite");
+      return list;
+    }
+  }
+
+  private boolean partyCheck(Player player) {
     if (plugin.getSnazzyPartiesManager().hasParty(player)){
       return true;
     }
     player.sendMessage("You need to be in a party to use this command.");
     return false;
   }
+
+  private void partyHelp(Player player) {
+    player.sendMessage("/party create");
+  }
+
 }

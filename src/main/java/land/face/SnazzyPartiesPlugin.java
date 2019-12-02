@@ -22,7 +22,9 @@ public class SnazzyPartiesPlugin extends JavaPlugin {
     Bukkit.getPluginManager().registerEvents(new PlayerQuitListener(this), this);
     Bukkit.getPluginManager().registerEvents(new PlayerJoinListener(this), this);
 
-    this.getCommand("party").setExecutor(new PartyCommands(this));
+    PartyCommands partyCommands = new PartyCommands(this);
+    this.getCommand("party").setExecutor(partyCommands);
+    this.getCommand("party").setTabCompleter(partyCommands);
 
     getConfig().options().copyDefaults(true);
     saveConfig();
