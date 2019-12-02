@@ -1,22 +1,30 @@
 package land.face;
 
-import land.face.listeners.InventoryClickListener;
-import land.face.commands.GenericCommand;
-import land.face.managers.PlayerFilterManager;
+import land.face.listeners.DamageListener;
+import land.face.commands.PartyCommands;
+import land.face.listeners.PlayerJoinListener;
+import land.face.listeners.PlayerQuitListener;
+import land.face.managers.SnazzyPartiesManager;
 import org.bukkit.Bukkit;
 import org.bukkit.event.HandlerList;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public class SnazzyPartiesPlugin extends JavaPlugin {
 
-  private PlayerFilterManager playerFilterManager;
+  private static SnazzyPartiesPlugin snazzyPartiesPlugin;
+  private SnazzyPartiesManager snazzyPartiesManager;
 
   public void onEnable() {
-    playerFilterManager = new PlayerFilterManager();
+    snazzyPartiesPlugin = this;
+    snazzyPartiesManager = new SnazzyPartiesManager(this);
 
-    Bukkit.getPluginManager().registerEvents(new InventoryClickListener(this), this);
+    Bukkit.getPluginManager().registerEvents(new DamageListener(this), this);
+    Bukkit.getPluginManager().registerEvents(new PlayerQuitListener(this), this);
+    Bukkit.getPluginManager().registerEvents(new PlayerJoinListener(this), this);
 
-    this.getCommand("genericcommand").setExecutor(new GenericCommand(this));
+    PartyCommands partyCommands = new PartyCommands(this);
+    this.getCommand("party").setExecutor(partyCommands);
+    this.getCommand("party").setTabCompleter(partyCommands);
 
     getConfig().options().copyDefaults(true);
     saveConfig();
@@ -27,12 +35,16 @@ public class SnazzyPartiesPlugin extends JavaPlugin {
 
   public void onDisable() {
     HandlerList.unregisterAll(this);
+    Bukkit.getScheduler().cancelTasks(this);
+    snazzyPartiesManager.parties.forEach(party -> snazzyPartiesManager.disbandParty(party));
     Bukkit.getServer().getLogger().info("Snazzy Parties disabled!");
   }
 
-  // This can be accessed from any manager that accepts the plugin as a param
-  // Useful to call other managers from within one
-  public PlayerFilterManager getPlayerFilterManager() {
-    return playerFilterManager;
+  public SnazzyPartiesManager getSnazzyPartiesManager() {
+    return  snazzyPartiesManager;
+  }
+
+  public static SnazzyPartiesPlugin getInstance() {
+    return snazzyPartiesPlugin;
   }
 }
