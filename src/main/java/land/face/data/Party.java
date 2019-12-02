@@ -1,104 +1,108 @@
 package land.face.data;
 
+import java.util.ArrayList;
+import java.util.List;
 import land.face.SnazzyPartiesPlugin;
-import land.face.utils.Timer;
+import land.face.timers.PartyTimer;
 import org.bukkit.entity.Player;
 import org.bukkit.scoreboard.Scoreboard;
 
-import java.util.List;
-
 public class Party {
 
-    private PartyMember leader;
-    private List<PartyMember> members;
+  private PartyMember leader;
+  private List<PartyMember> members;
 
-    private Boolean friendlyFire;
-    private Boolean expSharing;
-    private Boolean lootSharing;
+  private Boolean friendlyFire;
+  private Boolean expSharing;
+  private Boolean lootSharing;
 
-    private Scoreboard scoreboard;
-    private Timer timer;
+  private Scoreboard scoreboard;
+  private PartyTimer partyTimer;
 
-    private final int MAX_PLAYERS = 5;
-    private static final String PREFIX = SnazzyPartiesPlugin.getInstance().getConfig().getString("prefix");
+  private final int MAX_PLAYERS = 5;
+  private static final String PREFIX = SnazzyPartiesPlugin.getInstance().getConfig()
+      .getString("prefix");
 
-    public enum RemoveReasons {
-        Quit (" has left the party."),
-        Kicked (" was kicked from the party!"),
-        TimeOut (" timed out.");
-        private String message;
-        RemoveReasons(String message){
-            this.message = message;
-        }
-        public String getMessage() {
-            return message;
-        }
+  public enum RemoveReasons {
+    Quit(" has left the party."),
+    Kicked(" was kicked from the party!"),
+    TimeOut(" timed out.");
+    private String message;
+
+    RemoveReasons(String message) {
+      this.message = message;
     }
 
-    public Party(PartyMember leader, List<PartyMember> members, Scoreboard scoreboard) {
-        this.leader = leader;
-        this.members = members;
-        this.friendlyFire = false;
-        this.expSharing = false;
-        this.lootSharing = false;
-        this.scoreboard = scoreboard;
+    public String getMessage() {
+      return message;
     }
+  }
 
-    public PartyMember getLeader() {
-        return leader;
-    }
+  public Party(PartyMember leader, Scoreboard scoreboard) {
+    this.leader = leader;
+    this.friendlyFire = false;
+    this.expSharing = false;
+    this.lootSharing = false;
+    this.scoreboard = scoreboard;
+    members = new ArrayList<>();
+    members.add(leader);
+    partyTimer = new PartyTimer(this);
+  }
 
-    public void setLeader(Player newLeader) {
-        setLeader(new PartyMember(newLeader));
-    }
+  public PartyMember getLeader() {
+    return leader;
+  }
 
-    public void setLeader(PartyMember newLeader) {
-        leader = newLeader;
-    }
+  public void setLeader(Player newLeader) {
+    setLeader(new PartyMember(newLeader));
+  }
 
-    public List<PartyMember> getMembers() {
-        return members;
-    }
+  public void setLeader(PartyMember newLeader) {
+    leader = newLeader;
+  }
 
-    public void setMembers(List<PartyMember> newMembers) {
-        members = newMembers;
-    }
+  public List<PartyMember> getMembers() {
+    return members;
+  }
 
-    public String getPrefix() {
-        return PREFIX;
-    }
+  public String getPrefix() {
+    return PREFIX;
+  }
 
-    public int getMaxPartySize() {
-        return MAX_PLAYERS;
-    }
+  public int getMaxPartySize() {
+    return MAX_PLAYERS;
+  }
 
-    public int getPartySize() {
-       return members.size();
-    }
+  public int getPartySize() {
+    return members.size();
+  }
 
-    public Boolean getFriendlyFire() {
-        return friendlyFire;
-    }
+  public Boolean getFriendlyFire() {
+    return friendlyFire;
+  }
 
-    public void setFriendlyFire(Boolean bool){
-        friendlyFire = bool;
-    }
+  public void setFriendlyFire(Boolean bool) {
+    friendlyFire = bool;
+  }
 
-    public Scoreboard getScoreboard() {
-        return scoreboard;
-    }
+  public Scoreboard getScoreboard() {
+    return scoreboard;
+  }
 
-    public void setScoreboard(Scoreboard newScoreboard) {
-        scoreboard = newScoreboard;
-    }
+  public void setScoreboard(Scoreboard newScoreboard) {
+    scoreboard = newScoreboard;
+  }
 
-    public Timer getTimer() {
-        return timer;
-    }
+  public PartyTimer getPartyTimer() {
+    return partyTimer;
+  }
 
-    @Deprecated
-    public void setTimer(Timer newTimer) {
-        timer = newTimer;
-        timer.run();
+  public boolean isMember(Player player) {
+    for (PartyMember member : members) {
+      if (player.getUniqueId() == member.getUUID()) {
+        return true;
+      }
     }
+    return false;
+  }
 }
