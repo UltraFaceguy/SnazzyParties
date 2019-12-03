@@ -74,7 +74,7 @@ public class PartyManager {
     if (party == null) {
       return;
     }
-    partyAnnounce(party, message);
+    partyAnnounce(party, player.getDisplayName() + ": " + message);
   }
 
   public void partyAnnounce(Party party, String message) {
