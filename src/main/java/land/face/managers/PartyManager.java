@@ -3,8 +3,10 @@ package land.face.managers;
 import com.tealcube.minecraft.bukkit.TextUtils;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.CopyOnWriteArrayList;
 import land.face.SnazzyPartiesPlugin;
@@ -30,9 +32,13 @@ public class PartyManager {
   private Map<Integer, String> partyBoardKeys = new HashMap<>();
   private Scoreboard defaultBoard;
 
+  private int maxOfflineMillis = 600000;
+
   private String leaderPrefix;
   private String nameFormat;
+  private String offlineNameFormat;
   private String infoFormat;
+  private String offlineInfoFormat;
   private String borderFormat;
 
   public PartyManager(SnazzyPartiesPlugin plugin) {
@@ -41,8 +47,12 @@ public class PartyManager {
         .getString("config.scoreboard.leader-prefix", "★");
     nameFormat = plugin.getSettings()
         .getString("config.scoreboard.name-line", "%player_displayname%");
+    offlineNameFormat = plugin.getSettings()
+        .getString("config.scoreboard.offline-name-line", "%player_displayname%");
     infoFormat = plugin.getSettings()
         .getString("config.scoreboard.data-line", "&c%player_health_rounded%❤");
+    offlineInfoFormat = plugin.getSettings()
+        .getString("config.scoreboard.offline-data-line", "&c%player_health_rounded%❤");
     borderFormat = plugin.getSettings().getString("config.scoreboard.border-line", "++++++++++++");
 
     Map<Integer, ChatColor> chatColorOrdinals = new HashMap<>();
@@ -91,7 +101,7 @@ public class PartyManager {
     partyAnnounce(party, "Your party has been disbanded");
     getOnlinePartyMembers(party)
         .forEach(player -> Bukkit.getPlayer(player.getUsername()).setScoreboard(defaultBoard));
-    party.getPartyTimer().cancel();
+    party.getPartyTask().cancel();
     parties.remove(party);
   }
 
@@ -105,28 +115,32 @@ public class PartyManager {
     return true;
   }
 
-  public void removePlayer(Player cmdSender, Player target, RemoveReasons reason) {
-    Party party = getParty(cmdSender);
-    removePlayer(party, target, reason);
+  public void removePlayer(Player target, RemoveReasons reason) {
+    removePlayer(target.getUniqueId(), reason);
   }
 
-  public void removePlayer(Party party, Player target, RemoveReasons reason) {
+  public void removePlayer(UUID uuid, RemoveReasons reason) {
+    Party party = getParty(uuid);
     if (party.getPartySize() == 1) {
       disbandParty(party);
       return;
     }
-    if (party.getLeader().getUUID() == target.getUniqueId()) {
+    PartyMember partyMember = party.getMember(uuid);
+    if (party.getLeader().getUUID() == uuid) {
       promoteNextInLine(party);
-      partyAnnounce(party, party.getPrefix() + target.getName() + reason.getMessage());
-      partyAnnounce(party,
-          party.getPrefix() + target.getName() + " is now the leader of the party!");
+      partyAnnounce(party, party.getPrefix() + partyMember.getUsername() + reason.getMessage());
+      partyAnnounce(party, party.getPrefix() + partyMember.getUsername() + " is now the leader of the party!");
       return;
     } else {
-      partyAnnounce(party, target.getName() + reason.getMessage());
+      partyAnnounce(party, partyMember.getUsername() + reason.getMessage());
     }
     resetScoreboard(party);
-    party.getMembers().removeIf(partyMember -> partyMember.getUsername().equals(target.getName()));
-    target.setScoreboard(defaultBoard);
+    party.getMembers().removeIf(loopMember -> partyMember.getUUID().equals(loopMember.getUUID()));
+
+    Player player = Bukkit.getPlayer(uuid);
+    if (player != null && player.isValid()) {
+      player.setScoreboard(defaultBoard);
+    }
   }
 
   public void invitePlayer(Player cmdSender, Player target) {
@@ -157,9 +171,13 @@ public class PartyManager {
   }
 
   public Party getParty(Player player) {
+    return getParty(player.getUniqueId());
+  }
+
+  public Party getParty(UUID uuid) {
     for (Party party : parties) {
       for (PartyMember member : party.getMembers()) {
-        if (member.getUUID() == player.getUniqueId()) {
+        if (member.getUUID() == uuid) {
           return party;
         }
       }
@@ -168,13 +186,13 @@ public class PartyManager {
   }
 
   public boolean hasParty(Player player) {
-    return getParty(player) != null;
+    return getParty(player.getUniqueId()) != null;
   }
 
   public void promotePlayer(Player player) {
-    getParty(player).setLeader(player);
-    partyAnnounce(getParty(player),
-        "ayo " + player.getName() + " has been promoted to leader!");
+    Party party = getParty(player.getUniqueId());
+    party.setLeader(player);
+    partyAnnounce(party, "ayo " + player.getName() + " has been promoted to leader!");
   }
 
   private void promoteNextInLine(Party party) {
@@ -186,15 +204,20 @@ public class PartyManager {
     }
   }
 
-  public Boolean isLeader(Player player) {
-    if (!hasParty(player)) {
+  public boolean isLeader(Player player) {
+    return isLeader(player.getUniqueId());
+  }
+
+  public boolean isLeader(UUID uuid) {
+    Party party = getParty(uuid);
+    if (party == null) {
       return false;
     }
-    return getParty(player).getLeader().getUUID() == player.getUniqueId();
+    return party.getLeader().getUUID().equals(uuid);
   }
 
   public Boolean areInSameParty(Player p1, Player p2) {
-    return getParty(p1) == getParty(p2);
+    return getParty(p1.getUniqueId()) == getParty(p2.getUniqueId());
   }
 
   public Scoreboard setupScoreboard() {
@@ -210,9 +233,24 @@ public class PartyManager {
   }
 
   public void addToScoreboard(Player player) {
-    Scoreboard scoreboard = getParty(player).getScoreboard();
+    Scoreboard scoreboard = getParty(player.getUniqueId()).getScoreboard();
     scoreboard.getObjective(DisplaySlot.SIDEBAR);
     player.setScoreboard(scoreboard);
+  }
+
+  public void tickOfflinePartyMembers() {
+    Set<UUID> removeMap = new HashSet<>();
+    for (Party party : parties) {
+      for (PartyMember member : party.getMembers()) {
+        if (Bukkit.getPlayer(member.getUUID()) == null
+            && System.currentTimeMillis() - member.getQuitTimestamp() > maxOfflineMillis) {
+          removeMap.add(member.getUUID());
+        }
+      }
+    }
+    for (UUID uuid : removeMap) {
+      removePlayer(uuid, RemoveReasons.TimeOut);
+    }
   }
 
   private String getScoreboardKey(int i) {
@@ -228,11 +266,12 @@ public class PartyManager {
 
     for (PartyMember member : party.getMembers()) {
       Player player = Bukkit.getPlayer(member.getUUID());
-      if (isLeader(player)) {
-        addScoreboardLine(scoreboard, player, leaderPrefix + nameFormat, i);
-      } else {
-        addScoreboardLine(scoreboard, player, nameFormat, i);
+      String actualNameFormat = player == null ? offlineNameFormat : nameFormat;
+      String actualInfoFormat = player == null ? offlineInfoFormat : infoFormat;
+      if (isLeader(member.getUUID())) {
+        actualNameFormat = leaderPrefix + actualNameFormat;
       }
+      addScoreboardLine(scoreboard, player, actualNameFormat, i);
       i--;
       addScoreboardLine(scoreboard, player, infoFormat, i);
       i--;

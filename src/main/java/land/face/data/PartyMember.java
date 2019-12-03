@@ -5,18 +5,13 @@ import org.bukkit.entity.Player;
 
 public class PartyMember {
 
-  private Player player;
   private UUID uuid;
   private String username;
+  private long quitTimestamp;
 
   public PartyMember(Player player) {
-    this.player = player;
     this.uuid = player.getUniqueId();
     this.username = player.getDisplayName();
-  }
-
-  public Player getPlayer() {
-    return player;
   }
 
   public UUID getUUID() {
@@ -25,6 +20,14 @@ public class PartyMember {
 
   public String getUsername() {
     return username;
+  }
+
+  public long getQuitTimestamp() {
+    return quitTimestamp;
+  }
+
+  public void setQuitTimestamp(long quitTimestamp) {
+    this.quitTimestamp = quitTimestamp;
   }
 
 }

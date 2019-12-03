@@ -138,7 +138,7 @@ public class PartyCommands implements TabExecutor {
             return true;
           }
           if (partyManager.areInSameParty(player, target)) {
-            partyManager.removePlayer(player, target, Party.RemoveReasons.Kicked);
+            partyManager.removePlayer(target, Party.RemoveReasons.Kicked);
             return true;
           }
           player.sendMessage("Only party leader can run this command");
@@ -149,7 +149,7 @@ public class PartyCommands implements TabExecutor {
         if (!partyCheck(player)){
           return true;
         }
-        partyManager.removePlayer(party, player, Party.RemoveReasons.Quit);
+        partyManager.removePlayer(player, Party.RemoveReasons.Quit);
         return true;
       case "promote":
         if (!partyCheck(player)){
