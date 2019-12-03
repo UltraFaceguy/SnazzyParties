@@ -129,7 +129,8 @@ public class PartyManager {
     if (party.getLeader().getUUID() == uuid) {
       promoteNextInLine(party);
       partyAnnounce(party, party.getPrefix() + partyMember.getUsername() + reason.getMessage());
-      partyAnnounce(party, party.getPrefix() + partyMember.getUsername() + " is now the leader of the party!");
+      partyAnnounce(party,
+          party.getPrefix() + partyMember.getUsername() + " is now the leader of the party!");
       return;
     } else {
       partyAnnounce(party, partyMember.getUsername() + reason.getMessage());
@@ -269,6 +270,11 @@ public class PartyManager {
       boolean validPlayer = player == null || !player.isValid();
       String actualNameFormat = validPlayer ? offlineNameFormat : nameFormat;
       String actualInfoFormat = validPlayer ? offlineInfoFormat : infoFormat;
+      actualNameFormat = actualNameFormat.replace("{name}", member.getUsername())
+          .replace("{uuid}", member.getUUID().toString());
+      actualInfoFormat = actualInfoFormat.replace("{name}", member.getUsername())
+          .replace("{uuid}", member.getUUID().toString());
+
       if (isLeader(member.getUUID())) {
         actualNameFormat = leaderPrefix + actualNameFormat;
       }
