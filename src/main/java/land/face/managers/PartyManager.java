@@ -74,7 +74,14 @@ public class PartyManager {
   }
 
   public void createParty(Player player) {
-    Party party = new Party(new PartyMember(player), setupScoreboard());
+    createParty(player, "Party");
+  }
+
+  public void createParty(Player player, String name) {
+    if (name.length() > 18) {
+      name = name.substring(0, 17);
+    }
+    Party party = new Party(new PartyMember(player), setupScoreboard(name));
     parties.add(party);
     player.setScoreboard(party.getScoreboard());
     player.sendMessage("Congrats boss you've created a party");

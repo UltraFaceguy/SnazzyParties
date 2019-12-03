@@ -45,8 +45,12 @@ public class PartyCommands implements TabExecutor {
         partyHelp(player);
         return true;
       case "create":
-        if (!partyManager.hasParty(player)){
-          partyManager.createParty(player);
+        if (!partyManager.hasParty(player)) {
+          if (args.length > 1) {
+            partyManager.createParty(player, args[1]);
+          } else {
+            partyManager.createParty(player);
+          }
           return true;
         }
         player.sendMessage("You're already in a party bro?");
