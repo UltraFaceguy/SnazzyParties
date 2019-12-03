@@ -177,7 +177,7 @@ public class PartyManager {
   public Party getParty(UUID uuid) {
     for (Party party : parties) {
       for (PartyMember member : party.getMembers()) {
-        if (member.getUUID() == uuid) {
+        if (member.getUUID().toString().equals(uuid.toString())) {
           return party;
         }
       }
