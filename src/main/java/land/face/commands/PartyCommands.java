@@ -243,6 +243,7 @@ public class PartyCommands implements TabExecutor {
         list.add("invite");
         list.add("disband");
         list.add("leave");
+        list.add("rename");
         return list;
       }
       else {
