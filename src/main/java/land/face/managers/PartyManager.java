@@ -266,14 +266,15 @@ public class PartyManager {
 
     for (PartyMember member : party.getMembers()) {
       Player player = Bukkit.getPlayer(member.getUUID());
-      String actualNameFormat = player == null ? offlineNameFormat : nameFormat;
-      String actualInfoFormat = player == null ? offlineInfoFormat : infoFormat;
+      boolean validPlayer = player == null || !player.isValid();
+      String actualNameFormat = validPlayer ? offlineNameFormat : nameFormat;
+      String actualInfoFormat = validPlayer ? offlineInfoFormat : infoFormat;
       if (isLeader(member.getUUID())) {
         actualNameFormat = leaderPrefix + actualNameFormat;
       }
       addScoreboardLine(scoreboard, player, actualNameFormat, i);
       i--;
-      addScoreboardLine(scoreboard, player, infoFormat, i);
+      addScoreboardLine(scoreboard, player, actualInfoFormat, i);
       i--;
     }
 
