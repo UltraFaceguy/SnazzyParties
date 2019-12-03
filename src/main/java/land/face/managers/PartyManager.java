@@ -91,7 +91,7 @@ public class PartyManager {
     if (name.length() > 18) {
       name = name.substring(0, 17);
     }
-    Party party = new Party(new PartyMember(player), setupScoreboard(name));
+    Party party = new Party(new PartyMember(player), setupScoreboard(name), name);
     parties.add(party);
     player.setScoreboard(party.getScoreboard());
     player.sendMessage("Congrats boss you've created a party");
@@ -299,9 +299,8 @@ public class PartyManager {
   }
 
   private void resetScoreboard(Party party) {
-    party.setScoreboard(setupScoreboard());
+    party.setScoreboard(setupScoreboard(party.getPartyName()));
     getOnlinePartyMembers(party).forEach(
         partyMember -> addToScoreboard(Bukkit.getPlayer(partyMember.getUUID())));
   }
-
 }

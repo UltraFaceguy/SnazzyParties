@@ -18,6 +18,7 @@ public class Party {
   private Boolean lootSharing;
 
   private Scoreboard scoreboard;
+  private String partyName;
   private PartyTask partyTask;
 
   private final int MAX_PLAYERS = 5;
@@ -39,12 +40,13 @@ public class Party {
     }
   }
 
-  public Party(PartyMember leader, Scoreboard scoreboard) {
+  public Party(PartyMember leader, Scoreboard scoreboard, String partyName) {
     this.leader = leader;
     this.friendlyFire = false;
     this.expSharing = false;
     this.lootSharing = false;
     this.scoreboard = scoreboard;
+    this.partyName = partyName;
     members = new ArrayList<>();
     members.add(leader);
     partyTask = new PartyTask(this);
@@ -100,6 +102,14 @@ public class Party {
 
   public PartyMember getMember(Player player) {
     return getMember(player.getUniqueId());
+  }
+
+  public String getPartyName() {
+    return partyName;
+  }
+
+  public void setPartyName(String partyName) {
+    this.partyName = partyName;
   }
 
   public PartyMember getMember(UUID uuid) {

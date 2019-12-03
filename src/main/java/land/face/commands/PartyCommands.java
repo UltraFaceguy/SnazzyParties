@@ -41,13 +41,35 @@ public class PartyCommands implements TabExecutor {
     String arg = args[0].toLowerCase();
 
     switch (arg){
+      case "rename":
+        if (!partyCheck(player)) {
+          return true;
+        }
+        if (isLeader) {
+          if (args.length < 1) {
+            player.sendMessage("Invalid party name");
+            return true;
+          }
+          else {
+            args[0] = "";
+            String partyName = String.join(" ", args);
+            if (partyName.length() > 18) {
+              partyName = partyName.substring(0, 17);
+            }
+            party.setPartyName(partyName);
+            party.getScoreboard().getObjective("objective").setDisplayName(partyName);
+            return true;
+          }
+        }
+        return true;
       case "help":
         partyHelp(player);
         return true;
       case "create":
         if (!partyManager.hasParty(player)) {
           if (args.length > 1) {
-            partyManager.createParty(player, args[1]);
+            args[0] = "";
+            partyManager.createParty(player, String.join(" ", args));
           } else {
             partyManager.createParty(player);
           }
