@@ -1,17 +1,16 @@
 package land.face.commands;
 
+import java.util.ArrayList;
+import java.util.List;
 import land.face.SnazzyPartiesPlugin;
 import land.face.data.Party;
 import land.face.data.PartyMember;
-import land.face.managers.SnazzyPartiesManager;
+import land.face.managers.PartyManager;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabExecutor;
 import org.bukkit.entity.Player;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class PartyCommands implements TabExecutor {
 
@@ -23,7 +22,7 @@ public class PartyCommands implements TabExecutor {
 
   public boolean onCommand(CommandSender sender, Command cmd, String commandLabel, String[] args) {
 
-    SnazzyPartiesManager partyManager = plugin.getSnazzyPartiesManager();
+    PartyManager partyManager = plugin.getPartyManager();
 
     Player player = (Player) sender;
 
@@ -134,7 +133,7 @@ public class PartyCommands implements TabExecutor {
             player.sendMessage("You cannot kick yourself... Dude if you wanna leave so bad just use /party leave");
             return true;
           }
-          if (partyManager.areInSameParty(player, target)){
+          if (partyManager.areInSameParty(player, target)) {
             partyManager.removePlayer(player, target, Party.RemoveReasons.Kicked);
             return true;
           }
@@ -174,10 +173,10 @@ public class PartyCommands implements TabExecutor {
         if (isLeader){
           party.setFriendlyFire(!party.getFriendlyFire());
           if (party.getFriendlyFire()){
-            partyManager.systemSendMessage(party, "friendly fire has been enabled");
+            partyManager.partyAnnounce(party, "friendly fire has been enabled");
             return true;
           }
-          partyManager.systemSendMessage(party, "friendly fire has been disabled");
+          partyManager.partyAnnounce(party, "friendly fire has been disabled");
           return true;
         }
         player.sendMessage("Only party leader can run this command");
@@ -186,7 +185,7 @@ public class PartyCommands implements TabExecutor {
         if (!partyCheck(player)){
           return true;
         }
-        partyManager.sendMessage(player, String.join(" ", args));
+        partyManager.partyAnnounce(player, String.join(" ", args));
     }
     return true;
   }
@@ -196,7 +195,7 @@ public class PartyCommands implements TabExecutor {
     List<String> list = new ArrayList<>();
 
     Player player = (Player) sender;
-    SnazzyPartiesManager partyManager = plugin.getSnazzyPartiesManager();
+    PartyManager partyManager = plugin.getPartyManager();
 
     list.add("help");
 
@@ -234,7 +233,7 @@ public class PartyCommands implements TabExecutor {
   }
 
   private boolean partyCheck(Player player) {
-    if (plugin.getSnazzyPartiesManager().hasParty(player)){
+    if (plugin.getPartyManager().hasParty(player)){
       return true;
     }
     player.sendMessage("You need to be in a party to use this command.");
