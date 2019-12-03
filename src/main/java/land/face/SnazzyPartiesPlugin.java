@@ -8,8 +8,10 @@ import java.util.ArrayList;
 import java.util.List;
 import land.face.commands.PartyCommands;
 import land.face.listeners.DamageListener;
-import land.face.listeners.PlayerQuitListener;
+import land.face.listeners.PlayerExitListener;
+import land.face.listeners.PlayerJoinListener;
 import land.face.managers.PartyManager;
+import land.face.tasks.OfflineKickerTask;
 import org.bukkit.Bukkit;
 import org.bukkit.event.HandlerList;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -39,7 +41,11 @@ public class SnazzyPartiesPlugin extends JavaPlugin {
     partyManager = new PartyManager(this);
 
     Bukkit.getPluginManager().registerEvents(new DamageListener(this), this);
-    Bukkit.getPluginManager().registerEvents(new PlayerQuitListener(this), this);
+    Bukkit.getPluginManager().registerEvents(new PlayerJoinListener(this), this);
+    Bukkit.getPluginManager().registerEvents(new PlayerExitListener(this), this);
+
+    OfflineKickerTask kickerTask = new OfflineKickerTask(partyManager);
+    kickerTask.runTaskTimer(this, 20L, 100);
 
     PartyCommands partyCommands = new PartyCommands(this);
     this.getCommand("party").setExecutor(partyCommands);

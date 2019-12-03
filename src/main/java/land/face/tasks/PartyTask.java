@@ -1,14 +1,14 @@
-package land.face.timers;
+package land.face.tasks;
 
 import land.face.SnazzyPartiesPlugin;
 import land.face.data.Party;
 import org.bukkit.scheduler.BukkitRunnable;
 
-public class PartyTimer extends BukkitRunnable {
+public class PartyTask extends BukkitRunnable {
 
   private Party party;
 
-  public PartyTimer(Party party) {
+  public PartyTask(Party party) {
     this.party = party;
     runTaskTimer(SnazzyPartiesPlugin.getInstance(), 0L, 2L);
   }

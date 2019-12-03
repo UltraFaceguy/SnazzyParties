@@ -3,7 +3,9 @@ version: 0.0.1
 scoreboard:
   leader-prefix: "&e★&r"
   name-line: "%player_displayname%"
+  offline-name-line: "%player_name%"
   data-line: "&c%player_health_rounded% ❤"
+  offline-data-line: "%player_name%"
   border-line: "REEEEEEEEEEEEEE"
 
 prefix: "&d<&lP&d>&r "

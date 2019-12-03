@@ -2,8 +2,9 @@ package land.face.data;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 import land.face.SnazzyPartiesPlugin;
-import land.face.timers.PartyTimer;
+import land.face.tasks.PartyTask;
 import org.bukkit.entity.Player;
 import org.bukkit.scoreboard.Scoreboard;
 
@@ -18,7 +19,7 @@ public class Party {
 
   private Scoreboard scoreboard;
   private String partyName;
-  private PartyTimer partyTimer;
+  private PartyTask partyTask;
 
   private final int MAX_PLAYERS = 5;
   private static final String PREFIX = SnazzyPartiesPlugin.getInstance().getConfig()
@@ -48,7 +49,7 @@ public class Party {
     this.partyName = partyName;
     members = new ArrayList<>();
     members.add(leader);
-    partyTimer = new PartyTimer(this);
+    partyTask = new PartyTask(this);
   }
 
   public PartyMember getLeader() {
@@ -95,8 +96,12 @@ public class Party {
     scoreboard = newScoreboard;
   }
 
-  public PartyTimer getPartyTimer() {
-    return partyTimer;
+  public PartyTask getPartyTask() {
+    return partyTask;
+  }
+
+  public PartyMember getMember(Player player) {
+    return getMember(player.getUniqueId());
   }
 
   public String getPartyName() {
@@ -107,12 +112,16 @@ public class Party {
     this.partyName = partyName;
   }
 
-  public boolean isMember(Player player) {
+  public PartyMember getMember(UUID uuid) {
     for (PartyMember member : members) {
-      if (player.getUniqueId() == member.getUUID()) {
-        return true;
+      if (uuid == member.getUUID()) {
+        return member;
       }
     }
-    return false;
+    return null;
+  }
+
+  public boolean isMember(Player player) {
+    return getMember(player) != null;
   }
 }
