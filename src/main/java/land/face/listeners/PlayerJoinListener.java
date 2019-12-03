@@ -8,17 +8,16 @@ import org.bukkit.event.player.PlayerJoinEvent;
 
 public class PlayerJoinListener implements Listener {
 
-    private SnazzyPartiesPlugin plugin;
+  private SnazzyPartiesPlugin plugin;
 
-    public PlayerJoinListener(SnazzyPartiesPlugin plugin){
-        this.plugin = plugin;
-    }
+  public PlayerJoinListener(SnazzyPartiesPlugin plugin) {
+    this.plugin = plugin;
+  }
 
-    @Deprecated
-    @EventHandler(priority = EventPriority.LOWEST)
-    public void onJoin(PlayerJoinEvent e) {
-        if (plugin.getSnazzyPartiesManager().hasParty(e.getPlayer())) {
-            plugin.getSnazzyPartiesManager().addToScoreboard(e.getPlayer());
-        }
+  @EventHandler(priority = EventPriority.LOWEST)
+  public void onJoin(PlayerJoinEvent e) {
+    if (plugin.getPartyManager().hasParty(e.getPlayer())) {
+      plugin.getPartyManager().addToScoreboard(e.getPlayer());
     }
+  }
 }
