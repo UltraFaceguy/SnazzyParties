@@ -9,6 +9,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 import land.face.SnazzyPartiesPlugin;
+import land.face.data.Invitation;
 import land.face.data.Party;
 import land.face.data.Party.RemoveReasons;
 import land.face.data.PartyMember;
@@ -30,7 +31,7 @@ public class PartyManager {
   private int maxOfflineMillis = 600000;
 
   private List<Party> parties;
-  private HashMap<UUID, Party> invitations;
+  public HashMap<UUID, List<Invitation>> invitations;
 
   private String leaderPrefix;
   private String nameFormat;
@@ -73,7 +74,7 @@ public class PartyManager {
     return parties;
   }
 
-  public HashMap<UUID, Party> getInvitations() {
+  public HashMap<UUID, List<Invitation>> getInvitations() {
     return invitations;
   }
 
@@ -165,7 +166,12 @@ public class PartyManager {
     if (hasParty(target)) {
       return;
     }
-    invitations.put(target.getUniqueId(), party);
+    List<Invitation> list = new ArrayList();
+    if (invitations.get(target.getUniqueId()) != null) {
+      list = invitations.get(target.getUniqueId());
+    }
+    list.add(new Invitation(party));
+    invitations.put(target.getUniqueId(), list);
     target.sendMessage("You've been invited to " + party.getLeader().getUsername() + "'s party");
   }
 
