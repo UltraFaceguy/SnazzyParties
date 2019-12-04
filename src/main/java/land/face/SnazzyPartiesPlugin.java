@@ -53,10 +53,6 @@ public class SnazzyPartiesPlugin extends JavaPlugin {
     this.getCommand("party").setExecutor(partyCommands);
     this.getCommand("party").setTabCompleter(partyCommands);
 
-    getConfig().options().copyDefaults(true);
-    saveConfig();
-    reloadConfig();
-
     Bukkit.getServer().getLogger().info("Snazzy Parties enabled!");
   }
 
