@@ -7,6 +7,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import land.face.commands.PartyCommands;
+import land.face.listeners.ChatListener;
 import land.face.listeners.DamageListener;
 import land.face.listeners.PlayerExitListener;
 import land.face.listeners.PlayerJoinListener;
@@ -41,6 +42,7 @@ public class SnazzyPartiesPlugin extends JavaPlugin {
     partyManager = new PartyManager(this);
 
     Bukkit.getPluginManager().registerEvents(new DamageListener(this), this);
+    Bukkit.getPluginManager().registerEvents(new ChatListener(this), this);
     Bukkit.getPluginManager().registerEvents(new PlayerJoinListener(this), this);
     Bukkit.getPluginManager().registerEvents(new PlayerExitListener(this), this);
 

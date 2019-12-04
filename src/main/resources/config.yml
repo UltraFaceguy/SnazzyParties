@@ -12,6 +12,12 @@ scoreboard:
   border-line: "REEEEEEEEEEEEEE"
 
 prefix: "&d<&lP&d>&r "
+party-chat-trigger-prefix: "$"
+
+# Use the symbol '#' for where the original chat message should go
+language:
+  party-chat-format: "&b[Party] &f%player_displayname%: &b#"
+
 
 permission:
   reload: "party.reload"
