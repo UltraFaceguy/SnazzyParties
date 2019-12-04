@@ -25,13 +25,12 @@ public class PartyManager {
 
   private SnazzyPartiesPlugin plugin;
 
-  private List<Party> parties = new ArrayList<>();
-  private HashMap<UUID, Party> invitations = new HashMap<>();
-
   private Map<Integer, String> partyBoardKeys = new HashMap<>();
   private Scoreboard defaultBoard;
-
   private int maxOfflineMillis = 600000;
+
+  private List<Party> parties;
+  private HashMap<UUID, Party> invitations;
 
   private String leaderPrefix;
   private String nameFormat;
@@ -42,6 +41,8 @@ public class PartyManager {
 
   public PartyManager(SnazzyPartiesPlugin plugin) {
     this.plugin = plugin;
+    this.parties = new ArrayList<>();
+    this.invitations = new HashMap<>();
     leaderPrefix = plugin.getSettings()
         .getString("config.scoreboard.leader-prefix", "★");
     nameFormat = plugin.getSettings()
