@@ -26,9 +26,9 @@ public class Party {
       .getString("prefix");
 
   public enum RemoveReasons {
-    Quit(" has left the party."),
-    Kicked(" was kicked from the party!"),
-    TimeOut(" timed out.");
+    Quit(SnazzyPartiesPlugin.getInstance().getSettings().getString("config.message.remove-reason.quit", "&f%player_name% has left the party.")),
+    Kicked(SnazzyPartiesPlugin.getInstance().getSettings().getString("config.message.remove-reason.kick", "&f%player_name% was kicked from the party!")),
+    TimeOut(SnazzyPartiesPlugin.getInstance().getSettings().getString("config.message.remove-reason.timeout", "&f%player_name% timed out."));
     private String message;
 
     RemoveReasons(String message) {
