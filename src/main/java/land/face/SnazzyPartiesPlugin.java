@@ -61,7 +61,9 @@ public class SnazzyPartiesPlugin extends JavaPlugin {
   public void onDisable() {
     HandlerList.unregisterAll(this);
     Bukkit.getScheduler().cancelTasks(this);
-    partyManager.getParties().forEach(party -> partyManager.disbandParty(party));
+    for (int i = 0; i < partyManager.getParties().size(); i++) {
+      partyManager.disbandParty(partyManager.getParties().get(i));
+    }
     Bukkit.getServer().getLogger().info("Snazzy Parties disabled!");
   }
 
