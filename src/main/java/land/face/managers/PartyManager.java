@@ -175,6 +175,17 @@ public class PartyManager {
     target.sendMessage(Text.colorize(PlaceholderAPI.setPlaceholders(Bukkit.getPlayer(party.getLeader().getUUID()), plugin.getSettings().getString("config.message.invite", "&fYou've been invited to %player_name%'s party!"))));
   }
 
+  public Set<Player> getOnlinePlayers(Party party) {
+    Set<Player> players = new HashSet<>();
+    for (PartyMember member : party.getMembers()) {
+      Player p = Bukkit.getServer().getPlayer(member.getUUID());
+      if (p != null && p.isOnline()) {
+        players.add(p);
+      }
+    }
+    return players;
+  }
+
   public List<PartyMember> getOnlinePartyMembers(Party party) {
     ArrayList<PartyMember> list = new ArrayList<>();
     for (PartyMember member : party.getMembers()) {
@@ -192,7 +203,7 @@ public class PartyManager {
   public Party getParty(UUID uuid) {
     for (Party party : parties) {
       for (PartyMember member : party.getMembers()) {
-        if (member.getUUID().toString().equals(uuid.toString())) {
+        if (member.getUUID().equals(uuid)) {
           return party;
         }
       }
