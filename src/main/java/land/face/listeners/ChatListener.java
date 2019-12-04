@@ -42,7 +42,7 @@ public class ChatListener implements Listener {
     String msg = chatEvent.getMessage().replaceFirst(partyChatTriggerRegex, "");
     msg = partyChatFormat.replaceFirst(partyChatMessageRegex, msg);
     for (Player player : plugin.getPartyManager().getOnlinePlayers(party)) {
-      MessageUtils.sendMessage(player, PlaceholderAPI.setPlaceholders(player, msg));
+      MessageUtils.sendMessage(player, PlaceholderAPI.setPlaceholders(chatEvent.getPlayer(), msg));
     }
   }
 }
