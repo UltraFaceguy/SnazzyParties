@@ -278,6 +278,10 @@ public class PartyCommands implements TabExecutor {
 
   private void partyJoin(Player player, String[] arg) {
       List<Invitation> list = plugin.getPartyManager().getInvitations().get(player.getUniqueId());
+      if (list.size() == 0) {
+          player.sendMessage("You don't have any valid party invitations");
+          return;
+      }
       if (arg.length < 2) {
         Invitation invite = list.get(list.size()-1);
         partyJoin(player, invite);
@@ -295,6 +299,7 @@ public class PartyCommands implements TabExecutor {
   }
   private void partyJoin(Player player, Invitation invite) {
       if (!plugin.getPartyManager().isValidInvite(invite)) {
+          plugin.getPartyManager().getInvitations().get(player.getUniqueId()).remove(invite);
           player.sendMessage("Party invite expired");
           return;
       }
