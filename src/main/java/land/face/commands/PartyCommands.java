@@ -124,8 +124,8 @@ public class PartyCommands implements TabExecutor {
           player.sendMessage("You're already in a party");
           return true;
         }
-        if (partyManager.invitations.get(player.getUniqueId()) != null) {
-          partyManager.addPlayer(partyManager.invitations.get(player.getUniqueId()), player);
+        if (partyManager.getInvitations().get(player.getUniqueId()) != null) {
+          partyManager.addPlayer(partyManager.getInvitations().get(player.getUniqueId()), player);
         }
         else {
           player.sendMessage("You were not invited to any parties");
@@ -135,8 +135,8 @@ public class PartyCommands implements TabExecutor {
           player.sendMessage("You're already in a party");
           return true;
         }
-        if (partyManager.invitations.get(player.getUniqueId()) != null) {
-          partyManager.addPlayer(partyManager.invitations.get(player.getUniqueId()), player);
+        if (partyManager.getInvitations().get(player.getUniqueId()) != null) {
+          partyManager.addPlayer(partyManager.getInvitations().get(player.getUniqueId()), player);
         }
         else {
           player.sendMessage("You were not invited to any parties");

@@ -8,7 +8,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
-import java.util.concurrent.CopyOnWriteArrayList;
 import land.face.SnazzyPartiesPlugin;
 import land.face.data.Party;
 import land.face.data.Party.RemoveReasons;
@@ -26,8 +25,8 @@ public class PartyManager {
 
   private SnazzyPartiesPlugin plugin;
 
-  public List<Party> parties = new CopyOnWriteArrayList<>();
-  public HashMap<UUID, Party> invitations = new HashMap<>();
+  private List<Party> parties = new ArrayList<>();
+  private HashMap<UUID, Party> invitations = new HashMap<>();
 
   private Map<Integer, String> partyBoardKeys = new HashMap<>();
   private Scoreboard defaultBoard;
@@ -67,6 +66,14 @@ public class PartyManager {
     defaultBoard = Bukkit.getScoreboardManager().getNewScoreboard();
     Objective objective = defaultBoard.registerNewObjective("blank", "blank");
     objective.setDisplaySlot(DisplaySlot.SIDEBAR);
+  }
+
+  public List<Party> getParties() {
+    return parties;
+  }
+
+  public HashMap<UUID, Party> getInvitations() {
+    return invitations;
   }
 
   public void partyAnnounce(Player player, String message) {
