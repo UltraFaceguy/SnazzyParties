@@ -28,10 +28,11 @@ public class PartyManager {
 
   private Map<Integer, String> partyBoardKeys = new HashMap<>();
   private Scoreboard defaultBoard;
-  private int maxOfflineMillis = 600000;
+  private int maxOfflineMillis;
+  private int maxInviteMillis;
 
   private List<Party> parties;
-  public HashMap<UUID, List<Invitation>> invitations;
+  private HashMap<UUID, List<Invitation>> invitations;
 
   private String leaderPrefix;
   private String nameFormat;
@@ -44,6 +45,10 @@ public class PartyManager {
     this.plugin = plugin;
     this.parties = new ArrayList<>();
     this.invitations = new HashMap<>();
+    maxOfflineMillis = plugin.getSettings()
+        .getInt("config.offline-timeout-milliseconds", 300000);
+    maxInviteMillis = plugin.getSettings()
+        .getInt("config.invite-timeout-milliseconds", 60000);
     leaderPrefix = plugin.getSettings()
         .getString("config.scoreboard.leader-prefix", "★");
     nameFormat = plugin.getSettings()
@@ -229,6 +234,10 @@ public class PartyManager {
       return false;
     }
     return party.getLeader().getUUID().equals(uuid);
+  }
+
+  public boolean isValidInvite(Invitation invitation) {
+    return System.currentTimeMillis() - invitation.getTimestamp() < maxInviteMillis;
   }
 
   public Boolean areInSameParty(Player p1, Player p2) {

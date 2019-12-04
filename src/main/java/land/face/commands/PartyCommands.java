@@ -55,7 +55,7 @@ public class PartyCommands implements TabExecutor {
             args[0] = "";
             String partyName = String.join(" ", args);
             if (partyName.length() > 18) {
-              partyName = partyName.substring(0, 17);
+              partyName = partyName.substring(0, 18);
             }
             party.setPartyName(partyName);
             party.getScoreboard().getObjective("objective").setDisplayName(partyName);
@@ -125,7 +125,7 @@ public class PartyCommands implements TabExecutor {
           player.sendMessage("You're already in a party");
           return true;
         }
-        if (partyManager.invitations.get(player.getUniqueId()) != null) {
+        if (partyManager.getInvitations().get(player.getUniqueId()) != null) {
           partyJoin(player, args);
           return true;
         }
@@ -138,7 +138,7 @@ public class PartyCommands implements TabExecutor {
           player.sendMessage("You're already in a party");
           return true;
         }
-        if (partyManager.invitations.get(player.getUniqueId()) != null) {
+        if (partyManager.getInvitations().get(player.getUniqueId()) != null) {
           partyJoin(player, args);
           return true;
         }
@@ -294,13 +294,11 @@ public class PartyCommands implements TabExecutor {
       player.sendMessage("You don't have a party invite from " + arg[1]);
   }
   private void partyJoin(Player player, Invitation invite) {
-      List<Invitation> list = plugin.getPartyManager().getInvitations().get(player.getUniqueId());
-      if (!invite.isValid()) {
+      if (!plugin.getPartyManager().isValidInvite(invite)) {
           player.sendMessage("Party invite expired");
           return;
       }
-      list.remove(invite);
+      plugin.getPartyManager().getInvitations().get(player.getUniqueId()).remove(invite);
       plugin.getPartyManager().addPlayer(invite.getParty(), player);
-      plugin.getPartyManager().getInvitations().put(player.getUniqueId(), list);
   }
 }
