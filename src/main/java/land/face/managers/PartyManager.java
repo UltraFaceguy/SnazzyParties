@@ -16,6 +16,7 @@ import land.face.data.PartyMember;
 import me.clip.placeholderapi.PlaceholderAPI;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.scoreboard.DisplaySlot;
 import org.bukkit.scoreboard.Objective;
@@ -194,6 +195,23 @@ public class PartyManager {
       }
     }
     return list;
+  }
+
+  public Set<Player> getNearbyPlayers(Player player, Double range) {
+    if (!hasParty(player)) {
+      return null;
+    }
+    return getNearbyPlayers(getParty(player), player.getLocation(), range);
+  }
+
+  public Set<Player> getNearbyPlayers(Party party, Location location, Double range) {
+    Set<Player> players = null;
+    for (Player player : Bukkit.getOnlinePlayers()) {
+      if (getParty(player) == party && player.getWorld() == location.getWorld() && player.getLocation().distance(location) <= Math.pow(range, range)) {
+        players.add(player);
+      }
+    }
+    return players;
   }
 
   public Party getParty(Player player) {
