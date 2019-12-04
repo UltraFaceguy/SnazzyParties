@@ -13,6 +13,7 @@ import land.face.data.Invitation;
 import land.face.data.Party;
 import land.face.data.Party.RemoveReasons;
 import land.face.data.PartyMember;
+import land.face.utils.Text;
 import me.clip.placeholderapi.PlaceholderAPI;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -109,11 +110,11 @@ public class PartyManager {
     Party party = new Party(new PartyMember(player), setupScoreboard(name), name);
     parties.add(party);
     player.setScoreboard(party.getScoreboard());
-    player.sendMessage("Congrats boss you've created a party");
+    player.sendMessage(Text.colorize(PlaceholderAPI.setPlaceholders(player, plugin.getSettings().getString("config.message.create", "Congrats boss your party has been created"))));
   }
 
   public void disbandParty(Party party) {
-    partyAnnounce(party, "Your party has been disbanded");
+    partyAnnounce(party, plugin.getConfig().getString("config.message.disband", "Your party has been disbanded"));
     getOnlinePartyMembers(party)
         .forEach(player -> Bukkit.getPlayer(player.getUsername()).setScoreboard(defaultBoard));
     party.getPartyTask().cancel();
@@ -140,14 +141,13 @@ public class PartyManager {
       disbandParty(party);
       return;
     }
-    PartyMember partyMember = party.getMember(uuid);
     if (party.getLeader().getUUID().equals(uuid)) {
       promoteNextInLine(party);
-      partyAnnounce(party, partyMember.getUsername() + " is now the leader of the party!");
+      partyAnnounce(party, Text.colorize(PlaceholderAPI.setPlaceholders(Bukkit.getPlayer(party.getLeader().getUUID()), plugin.getSettings().getString("config.message.new-leader", "&f%player_name% is now the leader of the party!"))));
     }
-    partyAnnounce(party, partyMember.getUsername() + reason.getMessage());
+    partyAnnounce(party, PlaceholderAPI.setPlaceholders(Bukkit.getPlayer(uuid), Text.colorize(reason.getMessage())));
     resetScoreboard(party);
-    party.getMembers().remove(partyMember);
+    party.getMembers().remove(party.getMember(uuid));
     Player player = Bukkit.getPlayer(uuid);
     if (player != null && player.isValid()) {
       player.setScoreboard(defaultBoard);
@@ -156,7 +156,7 @@ public class PartyManager {
 
   public void invitePlayer(Player cmdSender, Player target) {
     if (hasParty(target)) {
-      cmdSender.sendMessage("They're already in a party");
+      cmdSender.sendMessage(Text.colorize(PlaceholderAPI.setPlaceholders(cmdSender, plugin.getSettings().getString("config.message.has-party.target", "They're already in a party"))));
       return;
     }
     Party party = getParty(cmdSender);
@@ -173,7 +173,7 @@ public class PartyManager {
     }
     list.add(new Invitation(party));
     invitations.put(target.getUniqueId(), list);
-    target.sendMessage("You've been invited to " + party.getLeader().getUsername() + "'s party");
+    target.sendMessage(Text.colorize(PlaceholderAPI.setPlaceholders(Bukkit.getPlayer(party.getLeader().getUUID()), plugin.getSettings().getString("config.message.invite", "&fYou've been invited to %player_name%'s party!"))));
   }
 
   public Set<Player> getOnlinePlayers(Party party) {
@@ -236,7 +236,7 @@ public class PartyManager {
   public void promotePlayer(Player player) {
     Party party = getParty(player.getUniqueId());
     party.setLeader(player);
-    partyAnnounce(party, "ayo " + player.getName() + " has been promoted to leader!");
+    partyAnnounce(party, Text.colorize(PlaceholderAPI.setPlaceholders(Bukkit.getPlayer(party.getLeader().getUUID()), plugin.getSettings().getString("config.message.new-leader", "&f%player_name% is now the leader of the party!"))));
   }
 
   private void promoteNextInLine(Party party) {
