@@ -42,6 +42,12 @@ public class PartyCommands implements TabExecutor {
     String arg = args[0].toLowerCase();
 
     switch (arg){
+      case "reload":
+        if (player.hasPermission(plugin.getSettings().getString("config.permission.reload", "OP"))) {
+            plugin.onDisable();
+            plugin.onEnable();
+        }
+        return true;
       case "rename":
         if (!partyCheck(player)) {
           return true;
