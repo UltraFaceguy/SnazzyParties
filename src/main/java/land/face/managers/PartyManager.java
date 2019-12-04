@@ -140,18 +140,13 @@ public class PartyManager {
       return;
     }
     PartyMember partyMember = party.getMember(uuid);
-    if (party.getLeader().getUUID() == uuid) {
+    if (party.getLeader().getUUID().equals(uuid)) {
       promoteNextInLine(party);
-      partyAnnounce(party, party.getPrefix() + partyMember.getUsername() + reason.getMessage());
-      partyAnnounce(party,
-          party.getPrefix() + partyMember.getUsername() + " is now the leader of the party!");
-      return;
-    } else {
-      partyAnnounce(party, partyMember.getUsername() + reason.getMessage());
+      partyAnnounce(party, partyMember.getUsername() + " is now the leader of the party!");
     }
+    partyAnnounce(party, partyMember.getUsername() + reason.getMessage());
     resetScoreboard(party);
-    party.getMembers().removeIf(loopMember -> partyMember.getUUID().equals(loopMember.getUUID()));
-
+    party.getMembers().remove(partyMember);
     Player player = Bukkit.getPlayer(uuid);
     if (player != null && player.isValid()) {
       player.setScoreboard(defaultBoard);
