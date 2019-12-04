@@ -3,6 +3,7 @@ package land.face.commands;
 import java.util.ArrayList;
 import java.util.List;
 import land.face.SnazzyPartiesPlugin;
+import land.face.data.Invitation;
 import land.face.data.Party;
 import land.face.data.PartyMember;
 import land.face.managers.PartyManager;
@@ -124,22 +125,26 @@ public class PartyCommands implements TabExecutor {
           player.sendMessage("You're already in a party");
           return true;
         }
-        if (partyManager.getInvitations().get(player.getUniqueId()) != null) {
-          partyManager.addPlayer(partyManager.getInvitations().get(player.getUniqueId()), player);
+        if (partyManager.invitations.get(player.getUniqueId()) != null) {
+          partyJoin(player, args);
+          return true;
         }
         else {
           player.sendMessage("You were not invited to any parties");
+          return true;
         }
       case "accept":
         if (partyManager.hasParty(player)){
           player.sendMessage("You're already in a party");
           return true;
         }
-        if (partyManager.getInvitations().get(player.getUniqueId()) != null) {
-          partyManager.addPlayer(partyManager.getInvitations().get(player.getUniqueId()), player);
+        if (partyManager.invitations.get(player.getUniqueId()) != null) {
+          partyJoin(player, args);
+          return true;
         }
         else {
           player.sendMessage("You were not invited to any parties");
+          return true;
         }
       case "kick":
         if (!partyCheck(player)){
@@ -271,4 +276,31 @@ public class PartyCommands implements TabExecutor {
     player.sendMessage("/party create");
   }
 
+  private void partyJoin(Player player, String[] arg) {
+      List<Invitation> list = plugin.getPartyManager().getInvitations().get(player.getUniqueId());
+      if (arg.length < 2) {
+        Invitation invite = list.get(list.size()-1);
+        partyJoin(player, invite);
+        return;
+      }
+      for (Invitation invite : list) {
+          for (PartyMember member : invite.getParty().getMembers()) {
+              if (member.getUsername().equalsIgnoreCase(arg[1])) {
+                partyJoin(player, invite);
+                return;
+              }
+          }
+      }
+      player.sendMessage("You don't have a party invite from " + arg[1]);
+  }
+  private void partyJoin(Player player, Invitation invite) {
+      List<Invitation> list = plugin.getPartyManager().getInvitations().get(player.getUniqueId());
+      if (!invite.isValid()) {
+          player.sendMessage("Party invite expired");
+          return;
+      }
+      list.remove(invite);
+      plugin.getPartyManager().addPlayer(invite.getParty(), player);
+      plugin.getPartyManager().getInvitations().put(player.getUniqueId(), list);
+  }
 }
