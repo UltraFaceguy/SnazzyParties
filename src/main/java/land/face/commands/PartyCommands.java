@@ -61,7 +61,7 @@ public class PartyCommands implements TabExecutor {
           }
           else {
             args[0] = "";
-            String partyName = String.join(" ", args);
+            String partyName = Text.colorize(String.join(" ", args));
             if (partyName.length() > 18) {
               partyName = partyName.substring(0, 18);
             }
