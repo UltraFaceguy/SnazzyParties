@@ -15,18 +15,13 @@ public class ChatListener implements Listener {
 
   private SnazzyPartiesPlugin plugin;
   private String partyChatTrigger;
-  private String partyChatFormat;
   private String partyChatTriggerRegex;
-  private String partyChatMessageRegex;
 
   public ChatListener(SnazzyPartiesPlugin plugin) {
     this.plugin = plugin;
     partyChatTrigger = plugin.getSettings()
         .getString("config.party-chat-trigger-prefix", "$");
-    partyChatFormat = plugin.getSettings()
-        .getString("config.language.party-chat-format", "&b[Party] %player_name%: #");
     partyChatTriggerRegex = Pattern.quote(partyChatTrigger);
-    partyChatMessageRegex = Pattern.quote("#");
   }
 
   @EventHandler

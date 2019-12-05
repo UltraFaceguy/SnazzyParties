@@ -43,6 +43,9 @@ public class PartyManager {
   private String offlineInfoFormat;
   private String borderFormat;
 
+  private String partyChatFormat;
+  private String partyChatMessageRegex;
+
   public PartyManager(SnazzyPartiesPlugin plugin) {
     this.plugin = plugin;
     this.parties = new ArrayList<>();
@@ -75,6 +78,9 @@ public class PartyManager {
     defaultBoard = Bukkit.getScoreboardManager().getNewScoreboard();
     Objective objective = defaultBoard.registerNewObjective("blank", "blank");
     objective.setDisplaySlot(DisplaySlot.SIDEBAR);
+
+    partyChatFormat = plugin.getSettings().getString("config.language.party-chat-format", "&b[Party] %player_name%: #");
+    partyChatMessageRegex = Pattern.quote("#");
   }
 
   public List<Party> getParties() {
