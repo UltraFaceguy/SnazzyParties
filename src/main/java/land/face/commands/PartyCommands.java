@@ -129,18 +129,6 @@ public class PartyCommands implements TabExecutor {
           player.sendMessage(Text.colorize(PlaceholderAPI.setPlaceholders(player, plugin.getSettings().getString("config.message.not-leader", "Only the part leader can run this command"))));
         return false;
       case "join":
-        if (partyCheck(player)){
-            player.sendMessage(Text.colorize(PlaceholderAPI.setPlaceholders(player, plugin.getSettings().getString("config.message.has-party.player", "You're already in a party."))));
-          return true;
-        }
-        if (partyManager.getInvitations().get(player.getUniqueId()) != null) {
-          partyJoin(player, args);
-          return true;
-        }
-        else {
-            player.sendMessage(Text.colorize(PlaceholderAPI.setPlaceholders(player, plugin.getSettings().getString("config.message.no-invite", "You don't have any party invites."))));
-            return true;
-        }
       case "accept":
         if (partyManager.hasParty(player)){
             player.sendMessage(Text.colorize(PlaceholderAPI.setPlaceholders(player, plugin.getSettings().getString("config.message.has-party.player", "You're already in a party."))));
