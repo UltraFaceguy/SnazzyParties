@@ -32,9 +32,6 @@ public class ChatListener implements Listener {
     }
     chatEvent.setCancelled(true);
     String msg = chatEvent.getMessage().replaceFirst(partyChatTriggerRegex, "");
-    msg = partyChatFormat.replaceFirst(partyChatMessageRegex, msg);
-    for (Player player : plugin.getPartyManager().getOnlinePlayers(party)) {
-      MessageUtils.sendMessage(player, PlaceholderAPI.setPlaceholders(chatEvent.getPlayer(), msg));
-    }
+    SnazzyPartiesPlugin.getInstance().getPartyManager().sendPartyMessage(chatEvent.getPlayer(), msg);
   }
 }

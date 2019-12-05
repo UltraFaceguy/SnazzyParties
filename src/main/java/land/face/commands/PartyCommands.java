@@ -224,7 +224,7 @@ public class PartyCommands implements TabExecutor {
         if (!partyCheck(player)){
           return true;
         }
-        partyManager.partyAnnounce(player, String.join(" ", args));
+        partyManager.sendPartyMessage(player, String.join(" ", args));
     }
     return true;
   }
