@@ -1,12 +1,9 @@
 package land.face.listeners;
 
-import com.tealcube.minecraft.bukkit.facecore.utilities.MessageUtils;
 import java.util.regex.Pattern;
 import land.face.SnazzyPartiesPlugin;
 import land.face.data.Party;
-import me.clip.placeholderapi.PlaceholderAPI;
 import org.bukkit.ChatColor;
-import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
