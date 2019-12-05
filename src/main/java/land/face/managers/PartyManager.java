@@ -8,6 +8,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
+import java.util.regex.Pattern;
+
+import com.tealcube.minecraft.bukkit.facecore.utilities.MessageUtils;
 import land.face.SnazzyPartiesPlugin;
 import land.face.data.Invitation;
 import land.face.data.Party;
@@ -89,6 +92,13 @@ public class PartyManager {
 
   public HashMap<UUID, List<Invitation>> getInvitations() {
     return invitations;
+  }
+
+  public void sendPartyMessage(Player player, String message) {
+    message = partyChatFormat.replaceFirst(partyChatMessageRegex, message);
+    for (Player member : getOnlinePlayers(getParty(player))) {
+      MessageUtils.sendMessage(member, PlaceholderAPI.setPlaceholders(player, message));
+    }
   }
 
   public void partyAnnounce(Player player, String message) {
