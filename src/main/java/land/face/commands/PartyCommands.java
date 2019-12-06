@@ -104,9 +104,12 @@ public class PartyCommands implements TabExecutor {
           }
           if (Bukkit.getPlayer(args[1]) != null) {
             partyManager.createParty(player);
+            player.sendMessage(Text.colorize(PlaceholderAPI.setPlaceholders(Bukkit.getPlayer(args[1]), plugin.getSettings().getString("config.message.invited-player", "%player_name% has been invited to your party."))));
             partyManager.invitePlayer(player, Bukkit.getPlayer(args[1]));
             return true;
           }
+          partyManager.createParty(player);
+          player.sendMessage(Text.colorize(PlaceholderAPI.setPlaceholders(Bukkit.getOfflinePlayer(args[1]), plugin.getSettings().getString("config.message.offline-player", "%player_name% is offline and cannot be invited"))));
           return true;
         }
         if (isLeader){
@@ -123,6 +126,7 @@ public class PartyCommands implements TabExecutor {
             player.sendMessage(Text.colorize(PlaceholderAPI.setPlaceholders(player, plugin.getSettings().getString("config.message.already-in-party", "You're already in the party"))));
             return true;
           }
+          player.sendMessage(Text.colorize(PlaceholderAPI.setPlaceholders(target, plugin.getSettings().getString("config.message.invited-player", "%player_name% has been invited to your party."))));
           partyManager.invitePlayer(player, target);
           return true;
         }
