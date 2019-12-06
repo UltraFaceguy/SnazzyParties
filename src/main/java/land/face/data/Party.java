@@ -25,21 +25,6 @@ public class Party {
   private static final String PREFIX = SnazzyPartiesPlugin.getInstance().getConfig()
       .getString("prefix");
 
-  public enum RemoveReasons {
-    Quit(SnazzyPartiesPlugin.getInstance().getSettings().getString("config.message.remove-reason.quit", "&f%player_name% has left the party.")),
-    Kicked(SnazzyPartiesPlugin.getInstance().getSettings().getString("config.message.remove-reason.kick", "&f%player_name% was kicked from the party!")),
-    TimeOut(SnazzyPartiesPlugin.getInstance().getSettings().getString("config.message.remove-reason.timeout", "&f%player_name% timed out."));
-    private String message;
-
-    RemoveReasons(String message) {
-      this.message = message;
-    }
-
-    public String getMessage() {
-      return message;
-    }
-  }
-
   public Party(PartyMember leader, Scoreboard scoreboard, String partyName) {
     this.leader = leader;
     this.friendlyFire = false;
