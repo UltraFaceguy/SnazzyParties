@@ -1,13 +1,13 @@
-name: SnaazyParties
+name: SnazzyParties
 version: 1.0
 main: land.face.SnazzyPartiesPlugin
-author: Faceguy
-description: GO SHAWDY
+author: Lozke
+description: JUST USE IT
 api-version: 1.14
 
 commands:
-  genericbutlonger:
+  party:
     usage: /<command>
-    aliases: [generic]
-    permission: generic.use
-    description: its ya birfday
+    aliases: p
+    permission: party.use
+    description: JUST DO IT

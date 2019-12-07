@@ -1,0 +1,23 @@
+version: 0.0.1
+
+invite-timeout-milliseconds: 60000
+offline-timeout-milliseconds: 300000
+
+scoreboard:
+  leader-prefix: "&e★&r"
+  name-line: "%player_displayname%"
+  offline-name-line: "{uuid}"
+  data-line: "&c%player_health_rounded% ❤"
+  offline-data-line: "{name}{uuid}"
+  border-line: "REEEEEEEEEEEEEE"
+
+prefix: "&d<&lP&d>&r "
+party-chat-trigger-prefix: "$"
+
+# Use the symbol '#' for where the original chat message should go
+language:
+  party-chat-format: "&b[Party] &f%player_displayname%: &b#"
+
+
+permission:
+  reload: "party.reload"
