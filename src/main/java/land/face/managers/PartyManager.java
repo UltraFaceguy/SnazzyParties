@@ -205,9 +205,12 @@ public class PartyManager {
   }
 
   public Set<Player> getNearbyPlayers(Party party, Location location, Double range) {
-    Set<Player> players = null;
-    for (Player player : Bukkit.getOnlinePlayers()) {
-      if (getParty(player) == party && player.getWorld() == location.getWorld() && player.getLocation().distance(location) <= Math.pow(range, range)) {
+    Set<Player> players = new HashSet<>();
+    for (Player player : getOnlinePlayers(party)) {
+      if (player.getWorld() != location.getWorld()) {
+        continue;
+      }
+      if (player.getLocation().distanceSquared(location) <= Math.pow(range, 2)) {
         players.add(player);
       }
     }
