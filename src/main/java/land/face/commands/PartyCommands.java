@@ -214,6 +214,28 @@ public class PartyCommands implements TabExecutor {
         }
           player.sendMessage(Text.colorize(PlaceholderAPI.setPlaceholders(player, plugin.getSettings().getString("config.message.not-leader", "Only the part leader can run this command"))));
         return true;
+      case "show":
+        if (!partyCheck(player)) {
+          return true;
+        }
+        if (party.getMember(player).getScoreboardToggle()) {
+          player.sendMessage(Text.colorize(PlaceholderAPI.setPlaceholders(player, plugin.getSettings().getString("config.message.not-leader", "Only the part leader can run this command"))));
+          return true;
+        }
+        player.setScoreboard(party.getScoreboard());
+        party.getMember(player).setScoreboardToggle(true);
+        return true;
+      case "hide":
+        if (!partyCheck(player)) {
+          return true;
+        }
+        if (!party.getMember(player).getScoreboardToggle()) {
+          player.sendMessage(Text.colorize(PlaceholderAPI.setPlaceholders(player, plugin.getSettings().getString("config.message.not-leader", "Only the part leader can run this command"))));
+          return true;
+        }
+        player.setScoreboard(partyManager.getDefaultBoard());
+        party.getMember(player).setScoreboardToggle(false);
+        return true;
       default:
         if (!partyCheck(player)){
           return true;
