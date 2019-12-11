@@ -14,9 +14,12 @@ scoreboard:
 prefix: "&d<&lP&d>&r "
 party-chat-trigger-prefix: "$"
 
-# Use the symbol '#' for where the original chat message should go
 language:
+  # Use the symbol '#' for where the original chat message should go
   party-chat-format: "&b[Party] &f%player_displayname%: &b#"
+  party-quit: "&f{name} has left the party."
+  party-kick: "&f{name} was kicked from the party!"
+  party-timeout: "&f{name} timed out."
 
 
 permission:

@@ -2,8 +2,6 @@ package land.face.listeners;
 
 import land.face.SnazzyPartiesPlugin;
 import land.face.data.Party;
-import land.face.data.PartyMember;
-import org.bukkit.Bukkit;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
