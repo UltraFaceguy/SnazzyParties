@@ -14,8 +14,8 @@ import com.tealcube.minecraft.bukkit.facecore.utilities.MessageUtils;
 import land.face.SnazzyPartiesPlugin;
 import land.face.data.Invitation;
 import land.face.data.Party;
-import land.face.data.Party.RemoveReasons;
 import land.face.data.PartyMember;
+import land.face.data.RemoveReason;
 import land.face.utils.Text;
 import me.clip.placeholderapi.PlaceholderAPI;
 import org.bukkit.Bukkit;
@@ -48,6 +48,9 @@ public class PartyManager {
 
   private String partyChatFormat;
   private String partyChatMessageRegex;
+  private String quit;
+  private String kicked;
+  private String timeout;
 
   public PartyManager(SnazzyPartiesPlugin plugin) {
     this.plugin = plugin;
@@ -68,6 +71,9 @@ public class PartyManager {
     offlineInfoFormat = plugin.getSettings()
         .getString("config.scoreboard.offline-data-line", "&c%player_health_rounded%❤");
     borderFormat = plugin.getSettings().getString("config.scoreboard.border-line", "++++++++++++");
+    quit = plugin.getSettings().getString("config.message.remove-reason.quit", "&f{name} has left the party.");
+    kicked = plugin.getSettings().getString("config.message.remove-reason.kick", "&f{name} was kicked from the party!");
+    timeout = plugin.getSettings().getString("config.message.remove-reason.timeout", "&f{name} timed out.");;
 
     Map<Integer, ChatColor> chatColorOrdinals = new HashMap<>();
     for (ChatColor chatColor : ChatColor.values()) {
@@ -120,7 +126,8 @@ public class PartyManager {
   }
 
   public void createParty(Player player, String name) {
-    if (name.length() > 18) {
+    int colorLength = name.length() - name.replaceAll("&([0-9a-fk-or])", "").length();
+    if (name.length() - colorLength > 18) {
       name = name.substring(0, 17);
     }
     Party party = new Party(new PartyMember(player), setupScoreboard(name), name);
@@ -147,11 +154,11 @@ public class PartyManager {
     return true;
   }
 
-  public void removePlayer(Player target, RemoveReasons reason) {
+  public void removePlayer(Player target, RemoveReason reason) {
     removePlayer(target.getUniqueId(), reason);
   }
 
-  public void removePlayer(UUID uuid, RemoveReasons reason) {
+  public void removePlayer(UUID uuid, RemoveReason reason) {
     Party party = getParty(uuid);
     if (party.getPartySize() == 1) {
       disbandParty(party);
@@ -161,13 +168,25 @@ public class PartyManager {
       promoteNextInLine(party);
       partyAnnounce(party, Text.colorize(PlaceholderAPI.setPlaceholders(Bukkit.getPlayer(party.getLeader().getUUID()), plugin.getSettings().getString("config.message.new-leader", "&f%player_name% is now the leader of the party!"))));
     }
-    partyAnnounce(party, PlaceholderAPI.setPlaceholders(Bukkit.getPlayer(uuid), Text.colorize(reason.getMessage())));
+    partyAnnounce(party, Text.colorize(removeReasonHandler(reason).replace("{name}", party.getMember(uuid).getUsername())));
     resetScoreboard(party);
     party.getMembers().remove(party.getMember(uuid));
     Player player = Bukkit.getPlayer(uuid);
     if (player != null && player.isValid()) {
       player.setScoreboard(defaultBoard);
     }
+  }
+
+  private String removeReasonHandler(RemoveReason reason) {
+    switch (reason) {
+      case QUIT:
+        return quit;
+      case KICKED:
+        return kicked;
+      case TIMEOUT:
+        return timeout;
+    }
+    return "Something went horribly wrong, but hey {name} was kicked from your party!";
   }
 
   public void invitePlayer(Player cmdSender, Player target) {
@@ -221,9 +240,12 @@ public class PartyManager {
   }
 
   public Set<Player> getNearbyPlayers(Party party, Location location, Double range) {
-    Set<Player> players = null;
-    for (Player player : Bukkit.getOnlinePlayers()) {
-      if (getParty(player) == party && player.getWorld() == location.getWorld() && player.getLocation().distance(location) <= Math.pow(range, range)) {
+    Set<Player> players = new HashSet<>();
+    for (Player player : getOnlinePlayers(party)) {
+      if (player.getWorld() != location.getWorld()) {
+        continue;
+      }
+      if (player.getLocation().distanceSquared(location) <= Math.pow(range, 2)) {
         players.add(player);
       }
     }
@@ -313,7 +335,7 @@ public class PartyManager {
       }
     }
     for (UUID uuid : removeMap) {
-      removePlayer(uuid, RemoveReasons.TimeOut);
+      removePlayer(uuid, RemoveReason.TIMEOUT);
     }
   }
 
