@@ -92,6 +92,10 @@ public class PartyManager {
     partyChatMessageRegex = Pattern.quote("#");
   }
 
+  public Scoreboard getDefaultBoard() {
+    return defaultBoard;
+  }
+
   public List<Party> getParties() {
     return parties;
   }
