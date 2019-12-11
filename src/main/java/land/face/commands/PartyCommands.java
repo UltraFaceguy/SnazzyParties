@@ -6,6 +6,7 @@ import land.face.SnazzyPartiesPlugin;
 import land.face.data.Invitation;
 import land.face.data.Party;
 import land.face.data.PartyMember;
+import land.face.data.RemoveReason;
 import land.face.managers.PartyManager;
 import land.face.utils.Text;
 import me.clip.placeholderapi.PlaceholderAPI;
@@ -173,7 +174,7 @@ public class PartyCommands implements TabExecutor {
             return true;
           }
           if (partyManager.areInSameParty(player, target)) {
-            partyManager.removePlayer(target, Party.RemoveReasons.Kicked);
+            partyManager.removePlayer(target, RemoveReason.KICKED);
             return true;
           }
             player.sendMessage(Text.colorize(PlaceholderAPI.setPlaceholders(player, plugin.getSettings().getString("config.message.not-leader", "Only the part leader can run this command"))));
@@ -184,7 +185,7 @@ public class PartyCommands implements TabExecutor {
         if (!partyCheck(player)){
           return true;
         }
-        partyManager.removePlayer(player, Party.RemoveReasons.Quit);
+        partyManager.removePlayer(player, RemoveReason.QUIT);
         return true;
       case "promote":
         if (!partyCheck(player)){
