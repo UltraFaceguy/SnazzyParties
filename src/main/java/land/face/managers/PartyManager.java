@@ -39,6 +39,7 @@ public class PartyManager {
   private HashMap<UUID, List<Invitation>> invitations;
   private HashMap<UUID, Party> playerParty;
 
+  private String prefix;
   private String leaderPrefix;
   private String nameFormat;
   private String offlineNameFormat;
@@ -57,6 +58,7 @@ public class PartyManager {
     this.parties = new ArrayList<>();
     this.invitations = new HashMap<>();
     this.playerParty = new HashMap<>();
+    prefix = plugin.getSettings().getString("prefix");
     maxOfflineMillis = plugin.getSettings()
         .getInt("config.offline-timeout-milliseconds", 300000);
     maxInviteMillis = plugin.getSettings()
@@ -126,7 +128,7 @@ public class PartyManager {
 
   public void partyAnnounce(Party party, String message) {
     for (PartyMember player : getOnlinePartyMembers(party)) {
-      Bukkit.getPlayer(player.getUUID()).sendMessage(TextUtils.color(party.getPrefix() + message));
+      Bukkit.getPlayer(player.getUUID()).sendMessage(TextUtils.color(prefix + message));
     }
   }
 

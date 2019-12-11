@@ -3,7 +3,6 @@ package land.face.data;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
-import land.face.SnazzyPartiesPlugin;
 import land.face.tasks.PartyTask;
 import org.bukkit.entity.Player;
 import org.bukkit.scoreboard.Scoreboard;
@@ -21,9 +20,7 @@ public class Party {
   private String partyName;
   private PartyTask partyTask;
 
-  private final int MAX_PLAYERS = 5;
-  private static final String PREFIX = SnazzyPartiesPlugin.getInstance().getConfig()
-      .getString("prefix");
+  private static final int MAX_PLAYERS = 5;
 
   public Party(PartyMember leader, Scoreboard scoreboard, String partyName) {
     this.leader = leader;
@@ -51,10 +48,6 @@ public class Party {
 
   public List<PartyMember> getMembers() {
     return members;
-  }
-
-  public String getPrefix() {
-    return PREFIX;
   }
 
   public int getMaxPartySize() {

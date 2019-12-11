@@ -1,5 +1,8 @@
 version: 0.0.1
 
+prefix: "&d<&lP&d>&r "
+party-chat-trigger-prefix: "$"
+
 invite-timeout-milliseconds: 60000
 offline-timeout-milliseconds: 300000
 
@@ -10,9 +13,6 @@ scoreboard:
   data-line: "&c%player_health_rounded% ❤"
   offline-data-line: "{name}{uuid}"
   border-line: "REEEEEEEEEEEEEE"
-
-prefix: "&d<&lP&d>&r "
-party-chat-trigger-prefix: "$"
 
 language:
   # Use the symbol '#' for where the original chat message should go
