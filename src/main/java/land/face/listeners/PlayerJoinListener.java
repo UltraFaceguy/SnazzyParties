@@ -20,6 +20,8 @@ public class PlayerJoinListener implements Listener {
     if (party == null) {
       return;
     }
-    e.getPlayer().setScoreboard(party.getScoreboard());
+    if (party.getMember(e.getPlayer()).getScoreboardToggle()) {
+      e.getPlayer().setScoreboard(party.getScoreboard());
+    }
   }
 }
