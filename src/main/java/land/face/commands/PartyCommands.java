@@ -219,7 +219,7 @@ public class PartyCommands implements TabExecutor {
           return true;
         }
         if (party.getMember(player).getScoreboardToggle()) {
-          player.sendMessage(Text.colorize(PlaceholderAPI.setPlaceholders(player, plugin.getSettings().getString("config.message.not-leader", "Only the part leader can run this command"))));
+          player.sendMessage(Text.colorize(PlaceholderAPI.setPlaceholders(player, plugin.getSettings().getString("config.message.show", "Your scoreboard is already shown"))));
           return true;
         }
         player.setScoreboard(party.getScoreboard());
@@ -230,7 +230,7 @@ public class PartyCommands implements TabExecutor {
           return true;
         }
         if (!party.getMember(player).getScoreboardToggle()) {
-          player.sendMessage(Text.colorize(PlaceholderAPI.setPlaceholders(player, plugin.getSettings().getString("config.message.not-leader", "Only the part leader can run this command"))));
+          player.sendMessage(Text.colorize(PlaceholderAPI.setPlaceholders(player, plugin.getSettings().getString("config.message.hide", "Your scoreboard is already hidden"))));
           return true;
         }
         player.setScoreboard(partyManager.getDefaultBoard());
