@@ -265,6 +265,12 @@ public class PartyCommands implements TabExecutor {
     if (partyManager.hasParty(player)) {
       Party party = partyManager.getParty(player);
       PartyMember leader = party.getLeader();
+      if (party.getMember(player).getScoreboardToggle()) {
+        list.add("hide");
+      }
+      else {
+        list.add("show");
+      }
       if (leader.getUUID() == player.getUniqueId()) {
         list.add("pvp");
         list.add("promote");
