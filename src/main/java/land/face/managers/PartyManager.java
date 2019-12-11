@@ -38,6 +38,7 @@ public class PartyManager {
 
   private List<Party> parties;
   private HashMap<UUID, List<Invitation>> invitations;
+  private HashMap<UUID, Party> playerParty;
 
   private String leaderPrefix;
   private String nameFormat;
@@ -56,6 +57,7 @@ public class PartyManager {
     this.plugin = plugin;
     this.parties = new ArrayList<>();
     this.invitations = new HashMap<>();
+    this.playerParty = new HashMap<>();
     maxOfflineMillis = plugin.getSettings()
         .getInt("config.offline-timeout-milliseconds", 300000);
     maxInviteMillis = plugin.getSettings()
@@ -132,6 +134,7 @@ public class PartyManager {
     }
     Party party = new Party(new PartyMember(player), setupScoreboard(name), name);
     parties.add(party);
+    playerParty.put(player.getUniqueId(), party);
     player.setScoreboard(party.getScoreboard());
     player.sendMessage(Text.colorize(PlaceholderAPI.setPlaceholders(player, plugin.getSettings().getString("config.message.create", "Congrats boss your party has been created"))));
   }
@@ -140,6 +143,8 @@ public class PartyManager {
     partyAnnounce(party, plugin.getConfig().getString("config.message.disband", "Your party has been disbanded"));
     getOnlinePartyMembers(party)
         .forEach(player -> Bukkit.getPlayer(player.getUsername()).setScoreboard(defaultBoard));
+    party.getMembers()
+            .forEach(partyMember -> playerParty.remove(partyMember.getUUID()));
     party.getPartyTask().cancel();
     parties.remove(party);
   }
@@ -149,6 +154,7 @@ public class PartyManager {
       return false;
     }
     party.getMembers().add(new PartyMember(player));
+    playerParty.put(player.getUniqueId(), party);
     resetScoreboard(party);
     addToScoreboard(player);
     return true;
@@ -171,6 +177,7 @@ public class PartyManager {
     partyAnnounce(party, Text.colorize(removeReasonHandler(reason).replace("{name}", party.getMember(uuid).getUsername())));
     resetScoreboard(party);
     party.getMembers().remove(party.getMember(uuid));
+    playerParty.remove(uuid);
     Player player = Bukkit.getPlayer(uuid);
     if (player != null && player.isValid()) {
       player.setScoreboard(defaultBoard);
@@ -257,14 +264,7 @@ public class PartyManager {
   }
 
   public Party getParty(UUID uuid) {
-    for (Party party : parties) {
-      for (PartyMember member : party.getMembers()) {
-        if (member.getUUID().equals(uuid)) {
-          return party;
-        }
-      }
-    }
-    return null;
+    return playerParty.get(uuid);
   }
 
   public boolean hasParty(Player player) {
