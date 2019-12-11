@@ -99,7 +99,7 @@ public class Party {
 
   public PartyMember getMember(UUID uuid) {
     for (PartyMember member : members) {
-      if (uuid == member.getUUID()) {
+      if (uuid.equals(member.getUUID())) {
         return member;
       }
     }

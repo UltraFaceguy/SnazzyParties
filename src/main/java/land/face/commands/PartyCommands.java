@@ -214,6 +214,28 @@ public class PartyCommands implements TabExecutor {
         }
           player.sendMessage(Text.colorize(PlaceholderAPI.setPlaceholders(player, plugin.getSettings().getString("config.message.not-leader", "Only the part leader can run this command"))));
         return true;
+      case "show":
+        if (!partyCheck(player)) {
+          return true;
+        }
+        if (party.getMember(player).getScoreboardToggle()) {
+          player.sendMessage(Text.colorize(PlaceholderAPI.setPlaceholders(player, plugin.getSettings().getString("config.message.show", "Your scoreboard is already shown"))));
+          return true;
+        }
+        player.setScoreboard(party.getScoreboard());
+        party.getMember(player).setScoreboardToggle(true);
+        return true;
+      case "hide":
+        if (!partyCheck(player)) {
+          return true;
+        }
+        if (!party.getMember(player).getScoreboardToggle()) {
+          player.sendMessage(Text.colorize(PlaceholderAPI.setPlaceholders(player, plugin.getSettings().getString("config.message.hide", "Your scoreboard is already hidden"))));
+          return true;
+        }
+        player.setScoreboard(partyManager.getDefaultBoard());
+        party.getMember(player).setScoreboardToggle(false);
+        return true;
       default:
         if (!partyCheck(player)){
           return true;
@@ -243,6 +265,12 @@ public class PartyCommands implements TabExecutor {
     if (partyManager.hasParty(player)) {
       Party party = partyManager.getParty(player);
       PartyMember leader = party.getLeader();
+      if (party.getMember(player).getScoreboardToggle()) {
+        list.add("hide");
+      }
+      else {
+        list.add("show");
+      }
       if (leader.getUUID() == player.getUniqueId()) {
         list.add("pvp");
         list.add("promote");
