@@ -8,6 +8,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
+import java.util.regex.Pattern;
+
+import com.tealcube.minecraft.bukkit.facecore.utilities.MessageUtils;
 import land.face.SnazzyPartiesPlugin;
 import land.face.data.Invitation;
 import land.face.data.Party;
@@ -43,6 +46,8 @@ public class PartyManager {
   private String offlineInfoFormat;
   private String borderFormat;
 
+  private String partyChatFormat;
+  private String partyChatMessageRegex;
   private String quit;
   private String kicked;
   private String timeout;
@@ -82,6 +87,9 @@ public class PartyManager {
     defaultBoard = Bukkit.getScoreboardManager().getNewScoreboard();
     Objective objective = defaultBoard.registerNewObjective("blank", "blank");
     objective.setDisplaySlot(DisplaySlot.SIDEBAR);
+
+    partyChatFormat = plugin.getSettings().getString("config.language.party-chat-format", "&b[Party] %player_name%: #");
+    partyChatMessageRegex = Pattern.quote("#");
   }
 
   public List<Party> getParties() {
@@ -90,6 +98,13 @@ public class PartyManager {
 
   public HashMap<UUID, List<Invitation>> getInvitations() {
     return invitations;
+  }
+
+  public void sendPartyMessage(Player player, String message) {
+    message = partyChatFormat.replaceFirst(partyChatMessageRegex, message);
+    for (Player member : getOnlinePlayers(getParty(player))) {
+      MessageUtils.sendMessage(member, PlaceholderAPI.setPlaceholders(player, message));
+    }
   }
 
   public void partyAnnounce(Player player, String message) {
