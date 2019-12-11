@@ -61,12 +61,13 @@ public class PartyCommands implements TabExecutor {
           }
           else {
             args[0] = "";
-            String partyName = Text.colorize(String.join(" ", args));
-            if (partyName.length() > 18) {
+            String partyName = String.join(" ", args);
+            int colorLength = partyName.length() - partyName.replaceAll("&([0-9a-fk-or])", "").length();
+            if (partyName.length() - colorLength > 18) {
               partyName = partyName.substring(0, 18);
             }
             party.setPartyName(partyName);
-            party.getScoreboard().getObjective("objective").setDisplayName(partyName);
+            party.getScoreboard().getObjective("objective").setDisplayName(Text.colorize(partyName));
             return true;
           }
         }
