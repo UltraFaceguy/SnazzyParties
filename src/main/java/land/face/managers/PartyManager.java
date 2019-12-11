@@ -111,7 +111,8 @@ public class PartyManager {
   }
 
   public void createParty(Player player, String name) {
-    if (name.length() > 18) {
+    int colorLength = name.length() - name.replaceAll("&([0-9a-fk-or])", "").length();
+    if (name.length() - colorLength > 18) {
       name = name.substring(0, 17);
     }
     Party party = new Party(new PartyMember(player), setupScoreboard(name), name);
