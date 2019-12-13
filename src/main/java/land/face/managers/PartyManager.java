@@ -58,7 +58,7 @@ public class PartyManager {
     this.parties = new ArrayList<>();
     this.invitations = new HashMap<>();
     this.playerParty = new HashMap<>();
-    prefix = plugin.getSettings().getString("prefix");
+    prefix = plugin.getSettings().getString("config.prefix", "&d<&lP&d>&r ");
     maxOfflineMillis = plugin.getSettings()
         .getInt("config.offline-timeout-milliseconds", 300000);
     maxInviteMillis = plugin.getSettings()
