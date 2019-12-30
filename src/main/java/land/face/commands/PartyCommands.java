@@ -40,7 +40,7 @@ public class PartyCommands implements TabExecutor {
       return true;
     }
 
-    Boolean isLeader = partyManager.isLeader(player);
+    boolean isLeader = partyManager.isLeader(player);
     Party party = partyManager.getParty(player);
     String arg = args[0].toLowerCase();
 
@@ -57,7 +57,7 @@ public class PartyCommands implements TabExecutor {
         }
         if (isLeader) {
           if (args.length < 1) {
-            player.sendMessage(Text.colorize(PlaceholderAPI.setPlaceholders(player, plugin.getSettings().getString("config.message.invalid-name", "Invalid party name"))));
+            player.sendMessage(Text.configHandler(player, plugin.getSettings().getString("config.language.party-invalid-name", "Invalid party name")));
             return true;
           }
           else {
@@ -86,7 +86,7 @@ public class PartyCommands implements TabExecutor {
           }
           return true;
         }
-        player.sendMessage(Text.colorize(PlaceholderAPI.setPlaceholders(player, plugin.getSettings().getString("config.message.has-party.player", "You're already in a party."))));
+        player.sendMessage(Text.configHandler(player, plugin.getSettings().getString("config.language.has-party.player", "You're already in a party.")));
         return true;
       case "disband":
         if (!partyCheck(player)){
@@ -96,48 +96,48 @@ public class PartyCommands implements TabExecutor {
           partyManager.disbandParty(party);
           return true;
         }
-        player.sendMessage(Text.colorize(PlaceholderAPI.setPlaceholders(player, plugin.getSettings().getString("config.message.not-leader", "Only the part leader can run this command"))));
+        player.sendMessage(Text.configHandler(player, plugin.getSettings().getString("config.language.party-not-leader", "Only the part leader can run this command")));
         return true;
       case "invite":
         if (!partyManager.hasParty(player)){
           if (args.length < 2) {
-            player.sendMessage(Text.colorize(PlaceholderAPI.setPlaceholders(player, plugin.getSettings().getString("config.message.specify-player", "Specify a player"))));
+            player.sendMessage(Text.configHandler(player, plugin.getSettings().getString("config.language.specify-player", "Specify a player")));
             return true;
           }
           if (Bukkit.getPlayer(args[1]) != null) {
             partyManager.createParty(player);
-            player.sendMessage(Text.colorize(PlaceholderAPI.setPlaceholders(Bukkit.getPlayer(args[1]), plugin.getSettings().getString("config.message.invited-player", "%player_name% has been invited to your party."))));
+            player.sendMessage(Text.configHandler(Bukkit.getPlayer(args[1]), plugin.getSettings().getString("config.language.party-invited-player", "%player_name% has been invited to your party.")));
             partyManager.invitePlayer(player, Bukkit.getPlayer(args[1]));
             return true;
           }
           partyManager.createParty(player);
-          player.sendMessage(Text.colorize(PlaceholderAPI.setPlaceholders(Bukkit.getOfflinePlayer(args[1]), plugin.getSettings().getString("config.message.offline-player", "%player_name% is offline and cannot be invited"))));
+          player.sendMessage(Text.configHandler(Bukkit.getOfflinePlayer(args[1]).getName(), plugin.getSettings().getString("config.language.party-offline-player", "%player_name% is offline and cannot be invited")));
           return true;
         }
         if (isLeader){
           if (args.length < 2) {
-            player.sendMessage(Text.colorize(PlaceholderAPI.setPlaceholders(player, plugin.getSettings().getString("config.message.specify-player", "Specify a player"))));
+            player.sendMessage(Text.configHandler(player, plugin.getSettings().getString("config.language.specify-player", "Specify a player")));
             return true;
           }
           if (Bukkit.getPlayer(args[1]) == null) {
-            player.sendMessage(Text.colorize(PlaceholderAPI.setPlaceholders(Bukkit.getOfflinePlayer(args[1]), plugin.getSettings().getString("config.message.offline-player", "%player_name% is offline and cannot be invited"))));
+            player.sendMessage(Text.configHandler(Bukkit.getOfflinePlayer(args[1]).getName(), plugin.getSettings().getString("config.language.party-offline-player", "%player_name% is offline and cannot be invited")));
             return true;
           }
           Player target = Bukkit.getPlayer(args[1]);
           if (target == player){
-            player.sendMessage(Text.colorize(PlaceholderAPI.setPlaceholders(player, plugin.getSettings().getString("config.message.already-in-party", "You're already in the party"))));
+            player.sendMessage(Text.configHandler(player, plugin.getSettings().getString("config.language.party-already-in-party", "You're already in the party")));
             return true;
           }
-          player.sendMessage(Text.colorize(PlaceholderAPI.setPlaceholders(target, plugin.getSettings().getString("config.message.invited-player", "%player_name% has been invited to your party."))));
+          player.sendMessage(Text.configHandler(target, plugin.getSettings().getString("config.language.party-invited-player", "%player_name% has been invited to your party.")));
           partyManager.invitePlayer(player, target);
           return true;
         }
-          player.sendMessage(Text.colorize(PlaceholderAPI.setPlaceholders(player, plugin.getSettings().getString("config.message.not-leader", "Only the part leader can run this command"))));
+          player.sendMessage(Text.configHandler(player, plugin.getSettings().getString("config.language.party-not-leader", "Only the part leader can run this command")));
         return false;
       case "join":
       case "accept":
         if (partyManager.hasParty(player)){
-            player.sendMessage(Text.colorize(PlaceholderAPI.setPlaceholders(player, plugin.getSettings().getString("config.message.has-party.player", "You're already in a party."))));
+            player.sendMessage(Text.configHandler(player, plugin.getSettings().getString("config.language.has-party.player", "You're already in a party.")));
           return true;
         }
         if (partyManager.getInvitations().get(player.getUniqueId()) != null) {
@@ -145,7 +145,7 @@ public class PartyCommands implements TabExecutor {
           return true;
         }
         else {
-            player.sendMessage(Text.colorize(PlaceholderAPI.setPlaceholders(player, plugin.getSettings().getString("config.message.no-invite", "You don't have any party invites."))));
+            player.sendMessage(Text.configHandler(player, plugin.getSettings().getString("config.language.party-no-invite", "You don't have any party invites.")));
             return true;
         }
       case "kick":
@@ -154,23 +154,23 @@ public class PartyCommands implements TabExecutor {
         }
         if (isLeader){
           if (args.length < 2) {
-            player.sendMessage(Text.colorize(PlaceholderAPI.setPlaceholders(player, plugin.getSettings().getString("config.message.specify-player", "Specify a player"))));
+            player.sendMessage(Text.configHandler(player, plugin.getSettings().getString("config.language.specify-player", "Specify a player")));
             return true;
           }
           if (Bukkit.getPlayer(args[1]) == null){
-            player.sendMessage(Text.colorize(PlaceholderAPI.setPlaceholders(Bukkit.getOfflinePlayer(args[1]), plugin.getSettings().getString("config.message.offline-player", "%player_name% is offline and cannot be invited"))));
+            player.sendMessage(Text.configHandler(Bukkit.getOfflinePlayer(args[1]).getName(), plugin.getSettings().getString("config.language.party-offline-player", "%player_name% is offline and cannot be invited")));
             return true;
           }
           Player target = Bukkit.getPlayer(args[1]);
           if (target == player){
-              player.sendMessage(Text.colorize(PlaceholderAPI.setPlaceholders(player, plugin.getSettings().getString("config.message.cannot-kick-self", "You cannot kick yourself"))));
+              player.sendMessage(Text.configHandler(player, plugin.getSettings().getString("config.language.party-cannot-kick-self", "You cannot kick yourself")));
             return true;
           }
           if (partyManager.areInSameParty(player, target)) {
             partyManager.removePlayer(target, RemoveReason.KICKED);
             return true;
           }
-            player.sendMessage(Text.colorize(PlaceholderAPI.setPlaceholders(player, plugin.getSettings().getString("config.message.not-leader", "Only the part leader can run this command"))));
+            player.sendMessage(Text.configHandler(player, plugin.getSettings().getString("config.language.party-not-leader", "Only the part leader can run this command")));
           return true;
         }
         return true;
@@ -186,18 +186,18 @@ public class PartyCommands implements TabExecutor {
         }
         if (isLeader){
           if (args.length < 2) {
-            player.sendMessage(Text.colorize(PlaceholderAPI.setPlaceholders(player, plugin.getSettings().getString("config.message.specify-player", "Specify a player"))));
+            player.sendMessage(Text.configHandler(player, plugin.getSettings().getString("config.language.specify-player", "Specify a player")));
             return true;
           }
           Player target = Bukkit.getPlayer(args[1]);
           if (target == player){
-              player.sendMessage(Text.colorize(PlaceholderAPI.setPlaceholders(player, plugin.getSettings().getString("config.message.already-leader", "You're already the party leader"))));
+              player.sendMessage(Text.configHandler(player, plugin.getSettings().getString("config.language.party-already-leader", "You're already the party leader")));
             return true;
           }
           partyManager.promotePlayer(target);
           return true;
         }
-          player.sendMessage(Text.colorize(PlaceholderAPI.setPlaceholders(player, plugin.getSettings().getString("config.message.not-leader", "Only the part leader can run this command"))));
+          player.sendMessage(Text.configHandler(player, plugin.getSettings().getString("config.language.party-not-leader", "Only the part leader can run this command")));
         return true;
       case "pvp":
         if (!partyCheck(player)){
@@ -206,20 +206,20 @@ public class PartyCommands implements TabExecutor {
         if (isLeader){
           party.setFriendlyFire(!party.getFriendlyFire());
           if (party.getFriendlyFire()){
-              partyManager.partyAnnounce(party, Text.colorize(PlaceholderAPI.setPlaceholders(player, plugin.getSettings().getString("config.message.friendly-fire.enabled", "Friendly fire has been enabled"))));
+              partyManager.partyAnnounce(party, Text.configHandler(player, plugin.getSettings().getString("config.language.party-friendly-fire.enabled", "Friendly fire has been enabled")));
               return true;
           }
-              partyManager.partyAnnounce(party, Text.colorize(PlaceholderAPI.setPlaceholders(player, plugin.getSettings().getString("config.message.friendly-fire.disabled", "Friendly fire has been disabled"))));
+              partyManager.partyAnnounce(party, Text.configHandler(player, plugin.getSettings().getString("config.language.party-friendly-fire.disabled", "Friendly fire has been disabled")));
           return true;
         }
-          player.sendMessage(Text.colorize(PlaceholderAPI.setPlaceholders(player, plugin.getSettings().getString("config.message.not-leader", "Only the part leader can run this command"))));
+          player.sendMessage(Text.configHandler(player, plugin.getSettings().getString("config.language.party-not-leader", "Only the part leader can run this command")));
         return true;
       case "show":
         if (!partyCheck(player)) {
           return true;
         }
         if (party.getMember(player).getScoreboardToggle()) {
-          player.sendMessage(Text.colorize(PlaceholderAPI.setPlaceholders(player, plugin.getSettings().getString("config.message.show", "Your scoreboard is already shown"))));
+          player.sendMessage(Text.configHandler(player, plugin.getSettings().getString("config.language.party-shown", "Your scoreboard is already shown")));
           return true;
         }
         player.setScoreboard(party.getScoreboard());
@@ -230,7 +230,7 @@ public class PartyCommands implements TabExecutor {
           return true;
         }
         if (!party.getMember(player).getScoreboardToggle()) {
-          player.sendMessage(Text.colorize(PlaceholderAPI.setPlaceholders(player, plugin.getSettings().getString("config.message.hide", "Your scoreboard is already hidden"))));
+          player.sendMessage(Text.configHandler(player, plugin.getSettings().getString("config.language.party-hidden", "Your scoreboard is already hidden")));
           return true;
         }
         player.setScoreboard(partyManager.getDefaultBoard());
@@ -298,7 +298,7 @@ public class PartyCommands implements TabExecutor {
     if (plugin.getPartyManager().hasParty(player)){
       return true;
     }
-    player.sendMessage(Text.colorize(PlaceholderAPI.setPlaceholders(player, plugin.getSettings().getString("config.message.no-party", "You must to be in a party to use this command."))));
+    player.sendMessage(Text.configHandler(player, plugin.getSettings().getString("config.language.party-no-party", "You must to be in a party to use this command.")));
     return false;
   }
 
@@ -309,7 +309,7 @@ public class PartyCommands implements TabExecutor {
   private void partyJoin(Player player, String[] arg) {
       List<Invitation> list = plugin.getPartyManager().getInvitations().get(player.getUniqueId());
       if (list.size() == 0) {
-          player.sendMessage(Text.colorize(PlaceholderAPI.setPlaceholders(player, plugin.getSettings().getString("config.message.no-invite", "You don't have any party invites."))));
+          player.sendMessage(Text.configHandler(player, plugin.getSettings().getString("config.language.party-no-invite", "You don't have any party invites.")));
           return;
       }
       if (arg.length < 2) {
@@ -325,12 +325,12 @@ public class PartyCommands implements TabExecutor {
               }
           }
       }
-      player.sendMessage(Text.colorize(PlaceholderAPI.setPlaceholders(player, plugin.getSettings().getString("config.message.no-invite", "You don't have any party invites."))));
+      player.sendMessage(Text.colorize(PlaceholderAPI.setPlaceholders(player, plugin.getSettings().getString("config.language.party-no-invite", "You don't have any party invites."))));
   }
   private void partyJoin(Player player, Invitation invite) {
       if (!plugin.getPartyManager().isValidInvite(invite)) {
           plugin.getPartyManager().getInvitations().get(player.getUniqueId()).remove(invite);
-          player.sendMessage(Text.colorize(PlaceholderAPI.setPlaceholders(player, plugin.getSettings().getString("config.message.invite-expired", "Party invite expired"))));
+          player.sendMessage(Text.configHandler(player, plugin.getSettings().getString("config.language.party-invite-expired", "Party invite expired")));
           return;
       }
       plugin.getPartyManager().getInvitations().get(player.getUniqueId()).remove(invite);
