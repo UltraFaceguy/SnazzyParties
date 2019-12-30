@@ -58,7 +58,7 @@ public class PartyManager {
     this.parties = new ArrayList<>();
     this.invitations = new HashMap<>();
     this.playerParty = new HashMap<>();
-    prefix = plugin.getSettings().getString("config.prefix", "&d<&lP&d>&r ");
+    prefix = plugin.getSettings().getString("config.prefix", "&d<&lP&d>&r");
     maxOfflineMillis = plugin.getSettings()
         .getInt("config.offline-timeout-milliseconds", 300000);
     maxInviteMillis = plugin.getSettings()
@@ -99,6 +99,10 @@ public class PartyManager {
     partyChatMessageRegex = Pattern.quote("#");
   }
 
+  public String getPrefix() {
+    return prefix;
+  }
+
   public Scoreboard getDefaultBoard() {
     return defaultBoard;
   }
@@ -114,7 +118,7 @@ public class PartyManager {
   public void sendPartyMessage(Player player, String message) {
     message = partyChatFormat.replaceFirst(partyChatMessageRegex, message);
     for (Player member : getOnlinePlayers(getParty(player))) {
-      MessageUtils.sendMessage(member, PlaceholderAPI.setPlaceholders(player, message));
+      MessageUtils.sendMessage(member, Text.configHandler(player, message));
     }
   }
 
@@ -145,13 +149,13 @@ public class PartyManager {
     parties.add(party);
     playerParty.put(player.getUniqueId(), party);
     player.setScoreboard(party.getScoreboard());
-    player.sendMessage(Text.colorize(PlaceholderAPI.setPlaceholders(player, plugin.getSettings()
-        .getString("config.message.create", "Congrats boss your party has been created"))));
+    player.sendMessage(Text.configHandler(player, plugin.getSettings()
+        .getString("config.language.party-create", "Congrats boss your party has been created")));
   }
 
   public void disbandParty(Party party) {
     partyAnnounce(party,
-        plugin.getConfig().getString("config.message.disband", "Your party has been disbanded"));
+        plugin.getConfig().getString("config.language.party-disband", "Your party has been disbanded").replace("{prefix}", prefix));
     getOnlinePartyMembers(party)
         .forEach(player -> Bukkit.getPlayer(player.getUsername()).setScoreboard(defaultBoard));
     party.getMembers()
@@ -183,13 +187,14 @@ public class PartyManager {
     }
     if (party.getLeader().getUUID().equals(uuid)) {
       promoteNextInLine(party);
-      partyAnnounce(party, Text.colorize(PlaceholderAPI
-          .setPlaceholders(Bukkit.getPlayer(party.getLeader().getUUID()), plugin.getSettings()
-              .getString("config.message.new-leader",
-                  "&f%player_name% is now the leader of the party!"))));
+      partyAnnounce(party, Text.configHandler(
+              Bukkit.getPlayer(party.getLeader().getUUID()),
+              plugin.getSettings().getString("config.language.party-new-leader", "&f%player_name% is now the leader of the party!")));
     }
-    partyAnnounce(party, Text.colorize(
-        removeReasonHandler(reason).replace("{name}", party.getMember(uuid).getUsername())));
+    String removeReason = removeReasonHandler(reason);
+    removeReason.replace("{name}", party.getMember(uuid).getUsername());
+    removeReason.replace("{prefix}", prefix);
+    partyAnnounce(party, Text.colorize(removeReason));
     resetScoreboard(party);
     party.getMembers().remove(party.getMember(uuid));
     playerParty.remove(uuid);
@@ -213,9 +218,9 @@ public class PartyManager {
 
   public void invitePlayer(Player cmdSender, Player target) {
     if (hasParty(target)) {
-      cmdSender.sendMessage(Text.colorize(PlaceholderAPI.setPlaceholders(cmdSender,
-          plugin.getSettings()
-              .getString("config.message.has-party.target", "They're already in a party"))));
+      cmdSender.sendMessage(Text.configHandler(
+              cmdSender,
+              plugin.getSettings().getString("config.language.has-party.target", "They're already in a party")));
       return;
     }
     Party party = getParty(cmdSender);
@@ -232,10 +237,9 @@ public class PartyManager {
     }
     list.add(new Invitation(party));
     invitations.put(target.getUniqueId(), list);
-    target.sendMessage(Text.colorize(PlaceholderAPI
-        .setPlaceholders(Bukkit.getPlayer(party.getLeader().getUUID()), plugin.getSettings()
-            .getString("config.message.invite",
-                "&fYou've been invited to %player_name%'s party!"))));
+    target.sendMessage(Text.configHandler(
+            Bukkit.getPlayer(party.getLeader().getUUID()),
+            plugin.getSettings().getString("config.language.party-invite", "&fYou've been invited to %player_name%'s party!")));
   }
 
   public Set<Player> getOnlinePlayers(Party party) {
@@ -294,10 +298,9 @@ public class PartyManager {
   public void promotePlayer(Player player) {
     Party party = getParty(player.getUniqueId());
     party.setLeader(player);
-    partyAnnounce(party, Text.colorize(PlaceholderAPI
-        .setPlaceholders(Bukkit.getPlayer(party.getLeader().getUUID()), plugin.getSettings()
-            .getString("config.message.new-leader",
-                "&f%player_name% is now the leader of the party!"))));
+    partyAnnounce(party, Text.configHandler(
+            Bukkit.getPlayer(party.getLeader().getUUID()), plugin.getSettings()
+            .getString("config.language.party-new-leader", "&f%player_name% is now the leader of the party!")));
   }
 
   private void promoteNextInLine(Party party) {
