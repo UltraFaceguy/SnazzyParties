@@ -12,9 +12,9 @@ public class Party {
   private PartyMember leader;
   private List<PartyMember> members;
 
-  private Boolean friendlyFire;
-  private Boolean expSharing;
-  private Boolean lootSharing;
+  private boolean friendlyFire;
+  private boolean expSharing;
+  private boolean lootSharing;
 
   private Scoreboard scoreboard;
   private String partyName;

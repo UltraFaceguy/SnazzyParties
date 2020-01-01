@@ -41,7 +41,7 @@ public class SnazzyPartiesPlugin extends JavaPlugin {
 
     partyManager = new PartyManager(this);
 
-    Bukkit.getPluginManager().registerEvents(new DamageListener(this), this);
+    Bukkit.getPluginManager().registerEvents(new DamageListener(partyManager), this);
     Bukkit.getPluginManager().registerEvents(new ChatListener(this), this);
     Bukkit.getPluginManager().registerEvents(new PlayerJoinListener(this), this);
     Bukkit.getPluginManager().registerEvents(new PlayerExitListener(this), this);
