@@ -218,23 +218,23 @@ public class PartyCommands implements TabExecutor {
         if (!partyCheck(player)) {
           return true;
         }
-        if (party.getMember(player).getScoreboardToggle()) {
+        if (party.getMember(player).isShowScoreboard()) {
           player.sendMessage(Text.configHandler(player, plugin.getSettings().getString("config.language.party-shown", "Your scoreboard is already shown")));
           return true;
         }
         player.setScoreboard(party.getScoreboard());
-        party.getMember(player).setScoreboardToggle(true);
+        party.getMember(player).setShowScoreboard(true);
         return true;
       case "hide":
         if (!partyCheck(player)) {
           return true;
         }
-        if (!party.getMember(player).getScoreboardToggle()) {
+        if (!party.getMember(player).isShowScoreboard()) {
           player.sendMessage(Text.configHandler(player, plugin.getSettings().getString("config.language.party-hidden", "Your scoreboard is already hidden")));
           return true;
         }
         player.setScoreboard(partyManager.getDefaultBoard());
-        party.getMember(player).setScoreboardToggle(false);
+        party.getMember(player).setShowScoreboard(false);
         return true;
       default:
         if (!partyCheck(player)){
@@ -265,7 +265,7 @@ public class PartyCommands implements TabExecutor {
     if (partyManager.hasParty(player)) {
       Party party = partyManager.getParty(player);
       PartyMember leader = party.getLeader();
-      if (party.getMember(player).getScoreboardToggle()) {
+      if (party.getMember(player).isShowScoreboard()) {
         list.add("hide");
       }
       else {
