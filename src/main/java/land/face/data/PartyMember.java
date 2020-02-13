@@ -8,12 +8,12 @@ public class PartyMember {
   private UUID uuid;
   private String username;
   private long quitTimestamp;
-  private boolean scoreboardToggle;
+  private boolean showScoreboard;
 
   public PartyMember(Player player) {
     this.uuid = player.getUniqueId();
     this.username = player.getDisplayName();
-    this.scoreboardToggle = true;
+    this.showScoreboard = true;
   }
 
   public UUID getUUID() {
@@ -32,11 +32,11 @@ public class PartyMember {
     this.quitTimestamp = quitTimestamp;
   }
 
-  public boolean getScoreboardToggle() {
-    return scoreboardToggle;
+  public boolean isShowScoreboard() {
+    return showScoreboard;
   }
 
-  public void setScoreboardToggle(boolean scoreboardToggle) {
-    this.scoreboardToggle = scoreboardToggle;
+  public void setShowScoreboard(boolean showScoreboard) {
+    this.showScoreboard = showScoreboard;
   }
 }
