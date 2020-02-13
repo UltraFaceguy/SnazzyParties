@@ -2,6 +2,8 @@ package land.face.listeners;
 
 import land.face.SnazzyPartiesPlugin;
 import land.face.data.Party;
+import land.face.data.PartyMember;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerKickEvent;
@@ -16,20 +18,22 @@ public class PlayerExitListener implements Listener {
   }
 
   @EventHandler
-  public void onQuit(PlayerQuitEvent e) {
-    Party party = plugin.getPartyManager().getParty(e.getPlayer());
-    if (party == null) {
-      return;
-    }
-    party.getMember(e.getPlayer()).setQuitTimestamp(System.currentTimeMillis());
+  public void onQuit(PlayerQuitEvent event) {
+    doLeaveStuff(event.getPlayer());
   }
 
   @EventHandler
-  public void onKick(PlayerKickEvent e) {
-    Party party = plugin.getPartyManager().getParty(e.getPlayer());
+  public void onKick(PlayerKickEvent event) {
+    doLeaveStuff(event.getPlayer());
+  }
+
+  private void doLeaveStuff(Player player) {
+    Party party = plugin.getPartyManager().getParty(player);
     if (party == null) {
       return;
     }
-    party.getMember(e.getPlayer()).setQuitTimestamp(System.currentTimeMillis());
+    PartyMember member = party.getMember(player);
+    member.setQuitTimestamp(System.currentTimeMillis());
+    member.setShowScoreboard(true);
   }
 }
