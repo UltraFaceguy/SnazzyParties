@@ -165,13 +165,17 @@ public class PartyManager {
   }
 
   public boolean addPlayer(Party party, Player player) {
+    return addPlayer(party, new PartyMember(player));
+  }
+
+  public boolean addPlayer(Party party, PartyMember partyMember) {
     if (party.getPartySize() >= party.getMaxPartySize()) {
       return false;
     }
-    party.getMembers().add(new PartyMember(player));
-    playerParty.put(player.getUniqueId(), party);
+    party.getMembers().add(partyMember);
+    playerParty.put(partyMember.getUUID(), party);
     resetScoreboard(party);
-    addToScoreboard(player);
+    addToScoreboard(Bukkit.getPlayer(partyMember.getUUID()));
     return true;
   }
 
