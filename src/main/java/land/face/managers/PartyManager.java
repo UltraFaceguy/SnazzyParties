@@ -421,4 +421,13 @@ public class PartyManager {
     getOnlinePartyMembers(party).forEach(
         partyMember -> addToScoreboard(Bukkit.getPlayer(partyMember.getUUID())));
   }
+
+  public boolean mergeParty(Party party1, Party party2) {
+    int combinedSize = party1.getPartySize() + party2.getPartySize();
+    if (combinedSize < party1.getMaxPartySize() && combinedSize < party2.getMaxPartySize()) {
+      party2.getMembers().forEach(partyMember -> addPlayer(party1, partyMember));
+      return true;
+    }
+    return false;
+  }
 }
