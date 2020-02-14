@@ -1,7 +1,5 @@
 package land.face.managers;
 
-import com.tealcube.minecraft.bukkit.TextUtils;
-import com.tealcube.minecraft.bukkit.facecore.utilities.MessageUtils;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -118,7 +116,7 @@ public class PartyManager {
   public void sendPartyMessage(Player player, String message) {
     message = partyChatFormat.replaceFirst(partyChatMessageRegex, message);
     for (Player member : getOnlinePlayers(getParty(player))) {
-      MessageUtils.sendMessage(member, Text.configHandler(player, message));
+      member.sendMessage(Text.configHandler(player, message));
     }
   }
 
@@ -132,7 +130,7 @@ public class PartyManager {
 
   public void partyAnnounce(Party party, String message) {
     for (PartyMember player : getOnlinePartyMembers(party)) {
-      Bukkit.getPlayer(player.getUUID()).sendMessage(TextUtils.color(prefix + message));
+      Bukkit.getPlayer(player.getUUID()).sendMessage(Text.colorize(prefix + message));
     }
   }
 
@@ -339,7 +337,7 @@ public class PartyManager {
   public Scoreboard setupScoreboard(String partyName) {
     Scoreboard scoreboard = Bukkit.getScoreboardManager().getNewScoreboard();
     Objective objective = scoreboard
-        .registerNewObjective("objective", "dummy", TextUtils.color(partyName));
+        .registerNewObjective("objective", "dummy", Text.colorize(partyName));
     objective.setDisplaySlot(DisplaySlot.SIDEBAR);
     return scoreboard;
   }
@@ -408,9 +406,9 @@ public class PartyManager {
     }
 
     if (player == null) {
-      teamLine.setPrefix(TextUtils.color(text));
+      teamLine.setPrefix(Text.colorize(text));
     } else {
-      teamLine.setPrefix(PlaceholderAPI.setPlaceholders(player, TextUtils.color(text)));
+      teamLine.setPrefix(PlaceholderAPI.setPlaceholders(player, Text.colorize(text)));
     }
 
     objective.getScore(getScoreboardKey(lineNumber)).setScore(lineNumber);
