@@ -22,6 +22,7 @@ language:
   party-timeout: "{prefix} &f{name} timed out."
   party-new-leader: "{prefix} &f%player_name% is now the leader of the party!"
   party-invite: "{prefix} &fYou''ve been invited to %player_name%''s party!"
+  party-invited-player: "{prefix} %player_name% has been invited to your party."
   party-disband: "{prefix} Your party has been disbanded"
   party-create: "{prefix} Congrats boss your party has been created"
   has-party:
