@@ -166,13 +166,17 @@ public class PartyManager {
   }
 
   public boolean addPlayer(Party party, Player player) {
+    return addPlayer(party, new PartyMember(player));
+  }
+
+  public boolean addPlayer(Party party, PartyMember partyMember) {
     if (party.getPartySize() >= party.getMaxPartySize()) {
       return false;
     }
-    party.getMembers().add(new PartyMember(player));
-    playerParty.put(player.getUniqueId(), party);
+    party.getMembers().add(partyMember);
+    playerParty.put(partyMember.getUUID(), party);
     resetScoreboard(party);
-    addToScoreboard(player);
+    addToScoreboard(Bukkit.getPlayer(partyMember.getUUID()));
     return true;
   }
 
@@ -418,5 +422,14 @@ public class PartyManager {
     party.setScoreboard(setupScoreboard(party.getPartyName()));
     getOnlinePartyMembers(party).forEach(
         partyMember -> addToScoreboard(Bukkit.getPlayer(partyMember.getUUID())));
+  }
+
+  public boolean mergeParty(Party party1, Party party2) {
+    int combinedSize = party1.getPartySize() + party2.getPartySize();
+    if (combinedSize < party1.getMaxPartySize() && combinedSize < party2.getMaxPartySize()) {
+      party2.getMembers().forEach(partyMember -> addPlayer(party1, partyMember));
+      return true;
+    }
+    return false;
   }
 }

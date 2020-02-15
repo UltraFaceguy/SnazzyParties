@@ -15,6 +15,7 @@ public class Party {
   private boolean friendlyFire;
   private boolean expSharing;
   private boolean lootSharing;
+  private boolean canMerge = true;
 
   private Scoreboard scoreboard;
   private String partyName;
@@ -88,6 +89,14 @@ public class Party {
 
   public void setPartyName(String partyName) {
     this.partyName = partyName;
+  }
+
+  public boolean CanMerge() {
+    return canMerge;
+  }
+
+  public void setCanMerge(boolean canMerge) {
+    this.canMerge = canMerge;
   }
 
   public PartyMember getMember(UUID uuid) {
