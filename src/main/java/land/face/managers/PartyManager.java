@@ -129,6 +129,7 @@ public class PartyManager {
   }
 
   public void partyAnnounce(Party party, String message) {
+    message = TextUtils.color(message.replace("{prefix}", prefix));
     for (PartyMember player : getOnlinePartyMembers(party)) {
       Bukkit.getPlayer(player.getUUID()).sendMessage(Text.colorize(prefix + message));
     }
@@ -153,7 +154,7 @@ public class PartyManager {
 
   public void disbandParty(Party party) {
     partyAnnounce(party,
-        plugin.getConfig().getString("config.language.party-disband", "Your party has been disbanded").replace("{prefix}", prefix));
+        plugin.getConfig().getString("config.language.party-disband", "Your party has been disbanded"));
     getOnlinePartyMembers(party)
         .forEach(player -> Bukkit.getPlayer(player.getUsername()).setScoreboard(defaultBoard));
     party.getMembers()
@@ -163,13 +164,17 @@ public class PartyManager {
   }
 
   public boolean addPlayer(Party party, Player player) {
+    return addPlayer(party, new PartyMember(player));
+  }
+
+  public boolean addPlayer(Party party, PartyMember partyMember) {
     if (party.getPartySize() >= party.getMaxPartySize()) {
       return false;
     }
-    party.getMembers().add(new PartyMember(player));
-    playerParty.put(player.getUniqueId(), party);
+    party.getMembers().add(partyMember);
+    playerParty.put(partyMember.getUUID(), party);
     resetScoreboard(party);
-    addToScoreboard(player);
+    addToScoreboard(Bukkit.getPlayer(partyMember.getUUID()));
     return true;
   }
 
@@ -185,14 +190,8 @@ public class PartyManager {
     }
     if (party.getLeader().getUUID().equals(uuid)) {
       promoteNextInLine(party);
-      partyAnnounce(party, Text.configHandler(
-              Bukkit.getPlayer(party.getLeader().getUUID()),
-              plugin.getSettings().getString("config.language.party-new-leader", "&f%player_name% is now the leader of the party!")));
     }
-    String removeReason = removeReasonHandler(reason);
-    removeReason.replace("{name}", party.getMember(uuid).getUsername());
-    removeReason.replace("{prefix}", prefix);
-    partyAnnounce(party, Text.colorize(removeReason));
+    partyAnnounce(party, removeReasonHandler(reason).replace("{name}", party.getMember(uuid).getUsername()));
     resetScoreboard(party);
     party.getMembers().remove(party.getMember(uuid));
     playerParty.remove(uuid);
@@ -268,7 +267,7 @@ public class PartyManager {
     return getNearbyPlayers(getParty(player), player.getLocation(), range);
   }
 
-  public Set<Player> getNearbyPlayers(Party party, Location location, Double range) {
+  public Set<Player> getNearbyPlayers(Party party, Location location, double range) {
     Set<Player> players = new HashSet<>();
     for (Player player : getOnlinePlayers(party)) {
       if (player.getWorld() != location.getWorld()) {
@@ -297,14 +296,17 @@ public class PartyManager {
     Party party = getParty(player.getUniqueId());
     party.setLeader(player);
     partyAnnounce(party, Text.configHandler(
-            Bukkit.getPlayer(party.getLeader().getUUID()), plugin.getSettings()
-            .getString("config.language.party-new-leader", "&f%player_name% is now the leader of the party!")));
+            Bukkit.getPlayer(party.getLeader().getUUID()),
+            plugin.getSettings().getString("config.language.party-new-leader", "&f%player_name% is now the leader of the party!")));
   }
 
   private void promoteNextInLine(Party party) {
     for (PartyMember member : party.getMembers()) {
       if (member.getUUID() != party.getLeader().getUUID()) {
         party.setLeader(member);
+        partyAnnounce(party, Text.configHandler(
+                Bukkit.getPlayer(member.getUUID()),
+                plugin.getSettings().getString("config.language.party-new-leader", "&f%player_name% is now the leader of the party!")));
         return;
       }
     }
@@ -418,5 +420,14 @@ public class PartyManager {
     party.setScoreboard(setupScoreboard(party.getPartyName()));
     getOnlinePartyMembers(party).forEach(
         partyMember -> addToScoreboard(Bukkit.getPlayer(partyMember.getUUID())));
+  }
+
+  public boolean mergeParty(Party party1, Party party2) {
+    int combinedSize = party1.getPartySize() + party2.getPartySize();
+    if (combinedSize < party1.getMaxPartySize() && combinedSize < party2.getMaxPartySize()) {
+      party2.getMembers().forEach(partyMember -> addPlayer(party1, partyMember));
+      return true;
+    }
+    return false;
   }
 }
