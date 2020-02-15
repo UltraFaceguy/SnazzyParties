@@ -1,8 +1,5 @@
 package land.face;
 
-import io.pixeloutlaw.minecraft.spigot.config.MasterConfiguration;
-import io.pixeloutlaw.minecraft.spigot.config.VersionedConfiguration;
-import io.pixeloutlaw.minecraft.spigot.config.VersionedSmartYamlConfiguration;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
@@ -13,6 +10,9 @@ import land.face.listeners.PlayerExitListener;
 import land.face.listeners.PlayerJoinListener;
 import land.face.managers.PartyManager;
 import land.face.tasks.OfflineKickerTask;
+import land.face.utils.config.MasterConfiguration;
+import land.face.utils.config.VersionedConfiguration;
+import land.face.utils.config.VersionedSmartYamlConfiguration;
 import org.bukkit.Bukkit;
 import org.bukkit.event.HandlerList;
 import org.bukkit.plugin.java.JavaPlugin;
