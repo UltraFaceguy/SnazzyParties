@@ -148,6 +148,33 @@ public class PartyCommands implements TabExecutor {
             player.sendMessage(Text.configHandler(player, plugin.getSettings().getString("config.language.party-no-invite", "You don't have any party invites.")));
             return true;
         }
+      case "reject":
+      case "decline":
+        if (partyManager.hasParty(player)) {
+          player.sendMessage(Text.configHandler(player, plugin.getSettings().getString("config.language.has-party.player", "You're already in a party.")));
+          return true;
+        }
+        if (partyManager.getInvitations().get(player.getUniqueId()) == null) {
+          player.sendMessage(Text.configHandler(player, plugin.getSettings().getString("config.language.party-no-invite", "You don't have any party invites.")));
+          return true;
+        }
+        List<Invitation> list = partyManager.getInvitations().get(player.getUniqueId());
+        if (args.length < 2) {
+          list.remove(list.size() - 1);
+          partyManager.getInvitations().put(player.getUniqueId(), list);
+          player.sendMessage(Text.configHandler(player, plugin.getSettings().getString("config.language.party-deny", "That wasn't very friendly of you... :(")));
+          return true;
+        }
+        for (Invitation invite : list) {
+          for (PartyMember member : invite.getParty().getMembers()) {
+            if (member.getUsername().equalsIgnoreCase(args[2])) {
+              list.remove(invite);
+              partyManager.getInvitations().put(player.getUniqueId(), list);
+              player.sendMessage(Text.configHandler(player, plugin.getSettings().getString("config.language.party-deny", "That wasn't very friendly of you... :(")));
+              return true;
+            }
+          }
+        }
       case "kick":
         if (!partyCheck(player)){
           return true;
