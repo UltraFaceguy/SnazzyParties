@@ -134,6 +134,22 @@ public class PartyCommands implements TabExecutor {
         }
           player.sendMessage(Text.configHandler(player, plugin.getSettings().getString("config.language.party-not-leader", "Only the part leader can run this command")));
         return false;
+      case "invites":
+        if (partyManager.hasParty(player)){
+          player.sendMessage(Text.configHandler(player, plugin.getSettings().getString("config.language.has-party.player", "You're already in a party.")));
+          return true;
+        }
+        if (partyManager.getInvitations().get(player.getUniqueId()) == null) {
+          player.sendMessage(Text.configHandler(player, plugin.getSettings().getString("config.language.party-no-invite", "You don't have any party invites.")));
+          return true;
+        }
+        List<Invitation> list = plugin.getPartyManager().getInvitations().get(player.getUniqueId());
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < list.size(); i++) {
+          sb.append("(").append((i + 1)).append(") ").append(list.get(i).getParty().getLeader().getUsername()).append(", ");
+        }
+        String string = String.valueOf(sb);
+        player.sendMessage(string.substring(0, string.length()-2));
       case "join":
       case "accept":
         if (partyManager.hasParty(player)){
@@ -290,6 +306,7 @@ public class PartyCommands implements TabExecutor {
       list.add("create");
       list.add("accept");
       list.add("invite");
+      list.add("invites");
       return list;
     }
   }
