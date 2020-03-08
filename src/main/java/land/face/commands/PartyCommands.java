@@ -176,17 +176,24 @@ public class PartyCommands implements TabExecutor {
         }
         List<Invitation> list = partyManager.getInvitations().get(player.getUniqueId());
         if (args.length < 2) {
-          list.remove(list.size() - 1);
+          Invitation invite = list.get(list.size() - 1);
+          player.sendMessage(Text.configHandler(player, plugin.getSettings().getString("config.language.party-deny.receiver", "That wasn't very friendly of you... :(")));
+          if (Bukkit.getPlayer(invite.getInviter()) != null) {
+            Bukkit.getPlayer(invite.getInviter()).sendMessage(Text.configHandler(player, plugin.getSettings().getString("config.language.party-deny.sender", "%player_name% rejected your invite... :(")));
+          }
+          list.remove(invite);
           partyManager.getInvitations().put(player.getUniqueId(), list);
-          player.sendMessage(Text.configHandler(player, plugin.getSettings().getString("config.language.party-deny", "That wasn't very friendly of you... :(")));
           return true;
         }
         for (Invitation invite : list) {
           for (PartyMember member : invite.getParty().getMembers()) {
             if (member.getUsername().equalsIgnoreCase(args[2])) {
+              player.sendMessage(Text.configHandler(player, plugin.getSettings().getString("config.language.party-deny.receiver", "That wasn't very friendly of you... :(")));
+              if (Bukkit.getPlayer(invite.getInviter()) != null) {
+                Bukkit.getPlayer(invite.getInviter()).sendMessage(Text.configHandler(player, plugin.getSettings().getString("config.language.party-deny.sender", "%player_name% rejected your invite... :(")));
+              }
               list.remove(invite);
               partyManager.getInvitations().put(player.getUniqueId(), list);
-              player.sendMessage(Text.configHandler(player, plugin.getSettings().getString("config.language.party-deny", "That wasn't very friendly of you... :(")));
               return true;
             }
           }
