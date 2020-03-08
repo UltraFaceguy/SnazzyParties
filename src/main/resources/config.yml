@@ -25,6 +25,7 @@ language:
   party-invited-player: "{prefix} %player_name% has been invited to your party."
   party-disband: "{prefix} Your party has been disbanded"
   party-create: "{prefix} Congrats boss your party has been created"
+  party-deny: "{prefix} That wasn't very friendly of you... :("
   has-party:
     target: "{prefix} They''re already in a party"
     player: "{prefix} You''re already in a party"
