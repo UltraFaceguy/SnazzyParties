@@ -1,5 +1,8 @@
 version: 0.0.1
 
+prefix: "&d<&lP&d>&r"
+party-chat-trigger-prefix: "$"
+
 invite-timeout-milliseconds: 60000
 offline-timeout-milliseconds: 300000
 
@@ -9,15 +12,40 @@ scoreboard:
   offline-name-line: "{uuid}"
   data-line: "&c%player_health_rounded% ❤"
   offline-data-line: "{name}{uuid}"
-  border-line: "REEEEEEEEEEEEEE"
+  border-line: "&l&7&m                          "
 
-prefix: "&d<&lP&d>&r "
-party-chat-trigger-prefix: "$"
-
-# Use the symbol '#' for where the original chat message should go
 language:
-  party-chat-format: "&b[Party] &f%player_displayname%: &b#"
-
+  # Use the symbol '#' for where the original chat message should go
+  party-chat-format: "{prefix} &f%player_displayname%: &b#"
+  party-quit: "{prefix} &f{name} has left the party."
+  party-kick: "{prefix} &f{name} was kicked from the party!"
+  party-timeout: "{prefix} &f{name} timed out."
+  party-new-leader: "{prefix} &f%player_name% is now the leader of the party!"
+  party-invite: "{prefix} &fYou''ve been invited to %player_name%''s party!"
+  party-invited-player: "{prefix} %player_name% has been invited to your party."
+  party-disband: "{prefix} Your party has been disbanded"
+  party-create: "{prefix} Congrats boss your party has been created"
+  party-deny:
+    receiver: "{prefix} That wasn't very friendly of you... :("
+    sender: "{prefix} %player_name% rejected your invite... :("
+  has-party:
+    target: "{prefix} They''re already in a party"
+    player: "{prefix} You''re already in a party"
+  party-invalid-name: "{prefix} ... invalid FUCKING PARTY NAME YOU FUCKING IDIOT"
+  party-not-leader: "{prefix} Only party leader can run this command"
+  specify-player: "{prefix} Specify a player"
+  party-no-invite: "{prefix} You were not invited to any parties"
+  party-cannot-kick-self: "{prefix} You cannot kick yourself"
+  party-already-leader: "{prefix} BRO? You''re the leader already???"
+  party-already-in-party: "{prefix} You''re already in the party."
+  party-friendly-fire:
+    enabled: "{prefix} friendly fire has been enabled"
+    disabled: "{prefix} friendly fire has been disabled"
+  party-invite-expired: "{prefix} Party invite expired"
+  party-offline-player: "{prefix} {name} is offline and cannot be invited"
+  party-no-party: "{prefix} You must to be in a party to use this command."
+  party-shown: "{prefix} Your scoreboard is already shown"
+  party-hidden:  "{prefix} Your scoreboard is already hidden"
 
 permission:
   reload: "party.reload"

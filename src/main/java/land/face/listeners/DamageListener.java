@@ -1,6 +1,6 @@
 package land.face.listeners;
 
-import land.face.SnazzyPartiesPlugin;
+import land.face.managers.PartyManager;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EvokerFangs;
 import org.bukkit.entity.LivingEntity;
@@ -13,10 +13,10 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 
 public class DamageListener implements Listener {
 
-  private SnazzyPartiesPlugin plugin;
+  private PartyManager manager;
 
-  public DamageListener(SnazzyPartiesPlugin plugin) {
-    this.plugin = plugin;
+  public DamageListener(PartyManager manager) {
+    this.manager = manager;
   }
 
   @EventHandler(priority = EventPriority.LOWEST)
@@ -28,8 +28,11 @@ public class DamageListener implements Listener {
     if (!(attacker instanceof Player)) {
       return;
     }
-    if (plugin.getPartyManager().areInSameParty((Player) e.getEntity(), (Player) attacker) && plugin
-        .getPartyManager().getParty((Player) e.getEntity()).getFriendlyFire()) {
+    if (!manager.hasParty((Player) e.getEntity()) || !manager.hasParty((Player) attacker)) {
+      return;
+    }
+    if (manager.areInSameParty((Player) e.getEntity(), (Player) attacker) &&
+            manager.getParty((Player) e.getEntity()).getFriendlyFire()) {
       e.isCancelled();
     }
   }

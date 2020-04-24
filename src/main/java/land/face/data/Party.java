@@ -3,7 +3,6 @@ package land.face.data;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
-import land.face.SnazzyPartiesPlugin;
 import land.face.tasks.PartyTask;
 import org.bukkit.entity.Player;
 import org.bukkit.scoreboard.Scoreboard;
@@ -13,32 +12,16 @@ public class Party {
   private PartyMember leader;
   private List<PartyMember> members;
 
-  private Boolean friendlyFire;
-  private Boolean expSharing;
-  private Boolean lootSharing;
+  private boolean friendlyFire;
+  private boolean expSharing;
+  private boolean lootSharing;
+  private boolean canMerge = true;
 
   private Scoreboard scoreboard;
   private String partyName;
   private PartyTask partyTask;
 
-  private final int MAX_PLAYERS = 5;
-  private static final String PREFIX = SnazzyPartiesPlugin.getInstance().getConfig()
-      .getString("prefix");
-
-  public enum RemoveReasons {
-    Quit(SnazzyPartiesPlugin.getInstance().getSettings().getString("config.message.remove-reason.quit", "&f%player_name% has left the party.")),
-    Kicked(SnazzyPartiesPlugin.getInstance().getSettings().getString("config.message.remove-reason.kick", "&f%player_name% was kicked from the party!")),
-    TimeOut(SnazzyPartiesPlugin.getInstance().getSettings().getString("config.message.remove-reason.timeout", "&f%player_name% timed out."));
-    private String message;
-
-    RemoveReasons(String message) {
-      this.message = message;
-    }
-
-    public String getMessage() {
-      return message;
-    }
-  }
+  private static final int MAX_PLAYERS = 5;
 
   public Party(PartyMember leader, Scoreboard scoreboard, String partyName) {
     this.leader = leader;
@@ -66,10 +49,6 @@ public class Party {
 
   public List<PartyMember> getMembers() {
     return members;
-  }
-
-  public String getPrefix() {
-    return PREFIX;
   }
 
   public int getMaxPartySize() {
@@ -112,9 +91,17 @@ public class Party {
     this.partyName = partyName;
   }
 
+  public boolean CanMerge() {
+    return canMerge;
+  }
+
+  public void setCanMerge(boolean canMerge) {
+    this.canMerge = canMerge;
+  }
+
   public PartyMember getMember(UUID uuid) {
     for (PartyMember member : members) {
-      if (uuid == member.getUUID()) {
+      if (uuid.equals(member.getUUID())) {
         return member;
       }
     }

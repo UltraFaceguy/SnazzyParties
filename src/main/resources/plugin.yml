@@ -3,7 +3,7 @@ version: 1.0
 main: land.face.SnazzyPartiesPlugin
 author: Lozke
 description: JUST USE IT
-api-version: 1.14
+api-version: 1.15
 
 commands:
   party:

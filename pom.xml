@@ -30,11 +30,11 @@
   <parent>
     <groupId>io.pixeloutlaw</groupId>
     <artifactId>spigot-plugin-parent</artifactId>
-    <version>1.14.4.2</version>
+    <version>1.15.1.4</version>
   </parent>
 
   <artifactId>SnazzyParties</artifactId>
-  <version>1.0.2</version>
+  <version>1.0.3</version>
   <packaging>jar</packaging>
 
   <name>SnazzyParties</name>
@@ -64,16 +64,15 @@
       <artifactId>spigot-api</artifactId>
     </dependency>
     <dependency>
-      <groupId>io.pixeloutlaw</groupId>
-      <artifactId>facecore</artifactId>
-      <version>1.14.4.1</version>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
       <groupId>me.clip</groupId>
       <artifactId>placeholderapi</artifactId>
       <version>2.10.2</version>
       <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.commons</groupId>
+      <artifactId>commons-lang3</artifactId>
+      <version>3.9</version>
     </dependency>
   </dependencies>
 
