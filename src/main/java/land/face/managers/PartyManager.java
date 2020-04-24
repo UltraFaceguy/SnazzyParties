@@ -15,6 +15,10 @@ import land.face.data.PartyMember;
 import land.face.data.RemoveReason;
 import land.face.utils.Text;
 import me.clip.placeholderapi.PlaceholderAPI;
+import net.md_5.bungee.api.chat.ClickEvent;
+import net.md_5.bungee.api.chat.ClickEvent.Action;
+import net.md_5.bungee.api.chat.ComponentBuilder;
+import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -129,9 +133,9 @@ public class PartyManager {
   }
 
   public void partyAnnounce(Party party, String message) {
-    message = TextUtils.color(message.replace("{prefix}", prefix));
+    message = Text.colorize(message.replace("{prefix}", prefix));
     for (PartyMember player : getOnlinePartyMembers(party)) {
-      Bukkit.getPlayer(player.getUUID()).sendMessage(Text.colorize(prefix + message));
+      Bukkit.getPlayer(player.getUUID()).sendMessage(message);
     }
   }
 
@@ -154,7 +158,8 @@ public class PartyManager {
 
   public void disbandParty(Party party) {
     partyAnnounce(party,
-        plugin.getConfig().getString("config.language.party-disband", "Your party has been disbanded"));
+        plugin.getConfig()
+            .getString("config.language.party-disband", "Your party has been disbanded"));
     getOnlinePartyMembers(party)
         .forEach(player -> Bukkit.getPlayer(player.getUsername()).setScoreboard(defaultBoard));
     party.getMembers()
@@ -191,7 +196,8 @@ public class PartyManager {
     if (party.getLeader().getUUID().equals(uuid)) {
       promoteNextInLine(party);
     }
-    partyAnnounce(party, removeReasonHandler(reason).replace("{name}", party.getMember(uuid).getUsername()));
+    partyAnnounce(party,
+        removeReasonHandler(reason).replace("{name}", party.getMember(uuid).getUsername()));
     resetScoreboard(party);
     party.getMembers().remove(party.getMember(uuid));
     playerParty.remove(uuid);
@@ -215,16 +221,15 @@ public class PartyManager {
 
   public void invitePlayer(Player cmdSender, Player target) {
     if (hasParty(target)) {
-      cmdSender.sendMessage(Text.configHandler(
-              cmdSender,
-              plugin.getSettings().getString("config.language.has-party.target", "They're already in a party")));
+      cmdSender.sendMessage(Text.configHandler(cmdSender, plugin.getSettings()
+          .getString("config.language.has-party.target", "They're already in a party")));
       return;
     }
     Party party = getParty(cmdSender);
-    invitePlayer(party, target);
+    invitePlayer(party, cmdSender, target);
   }
 
-  public void invitePlayer(Party party, Player target) {
+  public void invitePlayer(Party party, Player sender, Player target) {
     if (hasParty(target)) {
       return;
     }
@@ -234,9 +239,29 @@ public class PartyManager {
     }
     list.add(new Invitation(party));
     invitations.put(target.getUniqueId(), list);
-    target.sendMessage(Text.configHandler(
-            Bukkit.getPlayer(party.getLeader().getUUID()),
-            plugin.getSettings().getString("config.language.party-invite", "&fYou've been invited to %player_name%'s party!")));
+    target.sendMessage(Text.configHandler(Bukkit.getPlayer(party.getLeader().getUUID()),
+        plugin.getSettings().getString("config.language.party-invite",
+            "&fYou've been invited to %player_name%'s party!")));
+
+    TextComponent acceptButton = new TextComponent("[ACCEPT]");
+    acceptButton.setColor(net.md_5.bungee.api.ChatColor.GREEN);
+    acceptButton.setBold(true);
+    acceptButton.setClickEvent(
+        new ClickEvent(Action.RUN_COMMAND, "/party accept " + sender.getName()));
+
+    TextComponent declineButton = new TextComponent("[DECLINE]");
+    declineButton.setColor(net.md_5.bungee.api.ChatColor.RED);
+    declineButton.setBold(true);
+    declineButton.setClickEvent(
+        new ClickEvent(Action.RUN_COMMAND, "/party decline " + sender.getName()));
+
+    target.spigot().sendMessage(
+        new ComponentBuilder("  ")
+            .append(acceptButton)
+            .append("  ")
+            .append(declineButton)
+            .create()
+    );
   }
 
   public Set<Player> getOnlinePlayers(Party party) {
@@ -296,8 +321,9 @@ public class PartyManager {
     Party party = getParty(player.getUniqueId());
     party.setLeader(player);
     partyAnnounce(party, Text.configHandler(
-            Bukkit.getPlayer(party.getLeader().getUUID()),
-            plugin.getSettings().getString("config.language.party-new-leader", "&f%player_name% is now the leader of the party!")));
+        Bukkit.getPlayer(party.getLeader().getUUID()),
+        plugin.getSettings().getString("config.language.party-new-leader",
+            "&f%player_name% is now the leader of the party!")));
   }
 
   private void promoteNextInLine(Party party) {
@@ -305,8 +331,9 @@ public class PartyManager {
       if (member.getUUID() != party.getLeader().getUUID()) {
         party.setLeader(member);
         partyAnnounce(party, Text.configHandler(
-                Bukkit.getPlayer(member.getUUID()),
-                plugin.getSettings().getString("config.language.party-new-leader", "&f%player_name% is now the leader of the party!")));
+            Bukkit.getPlayer(member.getUUID()),
+            plugin.getSettings().getString("config.language.party-new-leader",
+                "&f%player_name% is now the leader of the party!")));
         return;
       }
     }
