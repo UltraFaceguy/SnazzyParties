@@ -19,15 +19,21 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 public class SnazzyPartiesPlugin extends JavaPlugin {
 
-  private static SnazzyPartiesPlugin snazzyPartiesPlugin;
+  private static SnazzyPartiesPlugin instance;
   private PartyManager partyManager;
 
   private MasterConfiguration settings;
   private VersionedSmartYamlConfiguration configYAML;
 
-  public void onEnable() {
-    snazzyPartiesPlugin = this;
+  public static SnazzyPartiesPlugin getInstance() {
+    return instance;
+  }
 
+  public SnazzyPartiesPlugin() {
+    instance = this;
+  }
+
+  public void onEnable() {
     List<VersionedSmartYamlConfiguration> configurations = new ArrayList<>();
     configurations.add(configYAML = defaultSettingsLoad("config.yml"));
 
@@ -78,7 +84,4 @@ public class SnazzyPartiesPlugin extends JavaPlugin {
     return partyManager;
   }
 
-  public static SnazzyPartiesPlugin getInstance() {
-    return snazzyPartiesPlugin;
-  }
 }

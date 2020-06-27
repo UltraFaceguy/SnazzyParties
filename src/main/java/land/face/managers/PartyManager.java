@@ -55,6 +55,8 @@ public class PartyManager {
   private String kicked;
   private String timeout;
 
+  public String PARTY_OBJECTIVE = "SP_";
+
   public PartyManager(SnazzyPartiesPlugin plugin) {
     this.plugin = plugin;
     this.parties = new ArrayList<>();
@@ -92,12 +94,10 @@ public class PartyManager {
       partyBoardKeys.put(i, ChatColor.BLACK + "" + chatColorOrdinals.get(i));
     }
 
-    defaultBoard = Bukkit.getScoreboardManager().getNewScoreboard();
-    Objective objective = defaultBoard.registerNewObjective("blank", "blank");
-    objective.setDisplaySlot(DisplaySlot.SIDEBAR);
+    defaultBoard = Bukkit.getScoreboardManager().getMainScoreboard();
 
-    partyChatFormat = plugin.getSettings()
-        .getString("config.language.party-chat-format", "&b[Party] %player_name%: #");
+    partyChatFormat = plugin.getSettings().getString("config.language.party-chat-format",
+        "&b[Party] %player_name%: #");
     partyChatMessageRegex = Pattern.quote("#");
   }
 
@@ -359,21 +359,16 @@ public class PartyManager {
     return getParty(p1.getUniqueId()) == getParty(p2.getUniqueId());
   }
 
-  public Scoreboard setupScoreboard() {
-    return setupScoreboard("Party");
-  }
-
   public Scoreboard setupScoreboard(String partyName) {
     Scoreboard scoreboard = Bukkit.getScoreboardManager().getNewScoreboard();
-    Objective objective = scoreboard
-        .registerNewObjective("objective", "dummy", Text.colorize(partyName));
+    Objective objective = scoreboard.registerNewObjective(PARTY_OBJECTIVE, "dummy", Text.colorize(partyName));
     objective.setDisplaySlot(DisplaySlot.SIDEBAR);
     return scoreboard;
   }
 
   public void addToScoreboard(Player player) {
     Scoreboard scoreboard = getParty(player.getUniqueId()).getScoreboard();
-    scoreboard.getObjective(DisplaySlot.SIDEBAR);
+    //scoreboard.getObjective(DisplaySlot.SIDEBAR);
     player.setScoreboard(scoreboard);
   }
 
@@ -397,6 +392,10 @@ public class PartyManager {
   }
 
   public void updateScoreboard(Party party) {
+    if (party == null) {
+      Bukkit.getLogger().warning("Null party trying to be updated!");
+      return;
+    }
     Scoreboard scoreboard = party.getScoreboard();
     int i = 16;
 
@@ -426,7 +425,6 @@ public class PartyManager {
   }
 
   private void addScoreboardLine(Scoreboard board, Player player, String text, int lineNumber) {
-    Objective objective = board.getObjective("objective");
 
     Team teamLine = board.getTeam(String.valueOf(lineNumber));
     if (teamLine == null) {
@@ -440,6 +438,11 @@ public class PartyManager {
       teamLine.setPrefix(PlaceholderAPI.setPlaceholders(player, Text.colorize(text)));
     }
 
+    Objective objective = board.getObjective(DisplaySlot.SIDEBAR);
+    if (objective == null) {
+      Bukkit.getLogger().warning("Null objective!");
+      return;
+    }
     objective.getScore(getScoreboardKey(lineNumber)).setScore(lineNumber);
   }
 
