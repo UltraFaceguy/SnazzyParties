@@ -70,8 +70,7 @@ public class PartyCommands implements TabExecutor {
               partyName = partyName.substring(0, 18);
             }
             party.setPartyName(partyName);
-            party.getScoreboard().getObjective("objective")
-                .setDisplayName(Text.colorize(partyName));
+            party.getScoreboard().getObjective(PartyManager.PARTY_OBJECTIVE).setDisplayName(Text.colorize(partyName));
             return true;
           }
         }
