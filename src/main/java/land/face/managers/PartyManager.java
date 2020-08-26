@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
 import java.util.regex.Pattern;
@@ -30,32 +31,32 @@ import org.bukkit.scoreboard.Team;
 
 public class PartyManager {
 
-  private SnazzyPartiesPlugin plugin;
+  private final SnazzyPartiesPlugin plugin;
 
-  private Map<Integer, String> partyBoardKeys = new HashMap<>();
-  private Scoreboard defaultBoard;
-  private int maxOfflineMillis;
-  private int maxInviteMillis;
+  private final Map<Integer, String> partyBoardKeys = new HashMap<>();
+  private final Scoreboard defaultBoard;
+  private final int maxOfflineMillis;
+  private final int maxInviteMillis;
 
-  private List<Party> parties;
-  private HashMap<UUID, List<Invitation>> invitations;
-  private HashMap<UUID, Party> playerParty;
+  private final List<Party> parties;
+  private final Map<UUID, List<Invitation>> invitations;
+  private final Map<UUID, Party> playerParty;
 
-  private String prefix;
-  private String leaderPrefix;
-  private String nameFormat;
-  private String offlineNameFormat;
-  private String infoFormat;
-  private String offlineInfoFormat;
-  private String borderFormat;
+  private final String prefix;
+  private final String leaderPrefix;
+  private final String nameFormat;
+  private final String offlineNameFormat;
+  private final String infoFormat;
+  private final String offlineInfoFormat;
+  private final String borderFormat;
 
-  private String partyChatFormat;
-  private String partyChatMessageRegex;
-  private String quit;
-  private String kicked;
-  private String timeout;
+  private final String partyChatFormat;
+  private final String partyChatMessageRegex;
+  private final String quit;
+  private final String kicked;
+  private final String timeout;
 
-  public String PARTY_OBJECTIVE = "SP_";
+  public static String PARTY_OBJECTIVE = "SP_";
 
   public PartyManager(SnazzyPartiesPlugin plugin) {
     this.plugin = plugin;
@@ -94,7 +95,7 @@ public class PartyManager {
       partyBoardKeys.put(i, ChatColor.BLACK + "" + chatColorOrdinals.get(i));
     }
 
-    defaultBoard = Bukkit.getScoreboardManager().getMainScoreboard();
+    defaultBoard = Objects.requireNonNull(Bukkit.getScoreboardManager()).getMainScoreboard();
 
     partyChatFormat = plugin.getSettings().getString("config.language.party-chat-format",
         "&b[Party] %player_name%: #");
@@ -113,7 +114,7 @@ public class PartyManager {
     return parties;
   }
 
-  public HashMap<UUID, List<Invitation>> getInvitations() {
+  public Map<UUID, List<Invitation>> getInvitations() {
     return invitations;
   }
 
@@ -140,7 +141,7 @@ public class PartyManager {
   }
 
   public void createParty(Player player) {
-    createParty(player, "Party");
+    createParty(player, ChatColor.AQUA + "Party");
   }
 
   public void createParty(Player player, String name) {
@@ -160,10 +161,10 @@ public class PartyManager {
     partyAnnounce(party,
         plugin.getConfig()
             .getString("config.language.party-disband", "Your party has been disbanded"));
-    getOnlinePartyMembers(party)
-        .forEach(player -> Bukkit.getPlayer(player.getUsername()).setScoreboard(defaultBoard));
-    party.getMembers()
-        .forEach(partyMember -> playerParty.remove(partyMember.getUUID()));
+    getOnlinePartyMembers(party).forEach(player ->
+        Objects.requireNonNull(Bukkit.getPlayer(player.getUsername())).setScoreboard(defaultBoard));
+    party.getMembers().forEach(partyMember ->
+        playerParty.remove(partyMember.getUUID()));
     party.getPartyTask().cancel();
     parties.remove(party);
   }
@@ -179,7 +180,7 @@ public class PartyManager {
     party.getMembers().add(partyMember);
     playerParty.put(partyMember.getUUID(), party);
     resetScoreboard(party);
-    addToScoreboard(Bukkit.getPlayer(partyMember.getUUID()));
+    addToScoreboard(Objects.requireNonNull(Bukkit.getPlayer(partyMember.getUUID())));
     return true;
   }
 
@@ -233,15 +234,15 @@ public class PartyManager {
     if (hasParty(target)) {
       return;
     }
-    List<Invitation> list = new ArrayList();
+    List<Invitation> list = new ArrayList<>();
     if (invitations.get(target.getUniqueId()) != null) {
       list = invitations.get(target.getUniqueId());
     }
     list.add(new Invitation(party));
     invitations.put(target.getUniqueId(), list);
-    target.sendMessage(Text.configHandler(Bukkit.getPlayer(party.getLeader().getUUID()),
-        plugin.getSettings().getString("config.language.party-invite",
-            "&fYou've been invited to %player_name%'s party!")));
+    target.sendMessage(Text.configHandler(Objects.requireNonNull(Bukkit.getPlayer(party.getLeader().getUUID())),
+        plugin.getSettings()
+            .getString("config.language.party-invite", "&fYou've been invited to %player_name%'s party!")));
 
     TextComponent acceptButton = new TextComponent("[ACCEPT]");
     acceptButton.setColor(net.md_5.bungee.api.ChatColor.GREEN);
@@ -276,7 +277,7 @@ public class PartyManager {
   }
 
   public List<PartyMember> getOnlinePartyMembers(Party party) {
-    ArrayList<PartyMember> list = new ArrayList<>();
+    List<PartyMember> list = new ArrayList<>();
     for (PartyMember member : party.getMembers()) {
       if (Bukkit.getServer().getPlayer(member.getUUID()) != null) {
         list.add(member);
@@ -321,7 +322,7 @@ public class PartyManager {
     Party party = getParty(player.getUniqueId());
     party.setLeader(player);
     partyAnnounce(party, Text.configHandler(
-        Bukkit.getPlayer(party.getLeader().getUUID()),
+        Objects.requireNonNull(Bukkit.getPlayer(party.getLeader().getUUID())),
         plugin.getSettings().getString("config.language.party-new-leader",
             "&f%player_name% is now the leader of the party!")));
   }
@@ -331,7 +332,7 @@ public class PartyManager {
       if (member.getUUID() != party.getLeader().getUUID()) {
         party.setLeader(member);
         partyAnnounce(party, Text.configHandler(
-            Bukkit.getPlayer(member.getUUID()),
+            Objects.requireNonNull(Bukkit.getPlayer(member.getUUID())),
             plugin.getSettings().getString("config.language.party-new-leader",
                 "&f%player_name% is now the leader of the party!")));
         return;
@@ -360,7 +361,7 @@ public class PartyManager {
   }
 
   public Scoreboard setupScoreboard(String partyName) {
-    Scoreboard scoreboard = Bukkit.getScoreboardManager().getNewScoreboard();
+    Scoreboard scoreboard = Objects.requireNonNull(Bukkit.getScoreboardManager()).getNewScoreboard();
     Objective objective = scoreboard.registerNewObjective(PARTY_OBJECTIVE, "dummy", Text.colorize(partyName));
     objective.setDisplaySlot(DisplaySlot.SIDEBAR);
     return scoreboard;
@@ -449,7 +450,7 @@ public class PartyManager {
   private void resetScoreboard(Party party) {
     party.setScoreboard(setupScoreboard(party.getPartyName()));
     getOnlinePartyMembers(party).forEach(
-        partyMember -> addToScoreboard(Bukkit.getPlayer(partyMember.getUUID())));
+        partyMember -> addToScoreboard(Objects.requireNonNull(Bukkit.getPlayer(partyMember.getUUID()))));
   }
 
   public boolean mergeParty(Party party1, Party party2) {
