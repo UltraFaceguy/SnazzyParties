@@ -35,7 +35,7 @@ public class PartyCommands extends BaseCommand {
   @Default
   @Subcommand("chat|msg")
   public void onChat(Player player, String message) {
-    if (!partyCheck(player)) return;
+    if (!partyCheck(player, false)) return;
     partyManager.sendPartyMessage(player, message);
   }
 
@@ -54,7 +54,7 @@ public class PartyCommands extends BaseCommand {
 
   @Subcommand("rename")
   public void onRename(Player player, String partyName) {
-    if (!partyCheck(player) || !isLeader(player)) return;
+    if (!partyCheck(player, true) || !isLeader(player, true)) return;
     int colorLength = partyName.length() - partyName.replaceAll("&([0-9a-fk-or])", "").length();
     if (partyName.length() - colorLength > 18) partyName = partyName.substring(0, 18);
     partyManager.getParty(player).setPartyName(partyName);
@@ -62,7 +62,7 @@ public class PartyCommands extends BaseCommand {
 
   @Subcommand("create")
   public void onCreate(Player player, @Optional String partyName) {
-    if (partyCheck(player)) {
+    if (partyCheck(player, false)) {
       player.sendMessage(Text.configHandler(player, plugin.getSettings()
               .getString("config.language.has-party.player", "You're already in a party.")));
       return;
@@ -76,28 +76,20 @@ public class PartyCommands extends BaseCommand {
 
   @Subcommand("disband")
   public void onDisband(Player player) {
-    if (isLeader(player)) partyManager.disbandParty(partyManager.getParty(player));
-    else player.sendMessage(Text.configHandler(player, plugin.getSettings()
-            .getString("config.language.party-not-leader",
-                    "Only the party leader can run this command")));
+    if (isLeader(player, true)) partyManager.disbandParty(partyManager.getParty(player));
   }
 
   @Subcommand("invite")
   public void onInvite(Player player, OnlinePlayer target) {
-    if (partyCheck(player) && !isLeader(player)) {
-      player.sendMessage(Text.configHandler(player, plugin.getSettings()
-              .getString("config.language.party-not-leader",
-                      "Only the party leader can run this command")));
-      return;
-    }
-    if (partyCheck(target.getPlayer())) {
+    if (partyCheck(player, true) || !isLeader(player, true)) return;
+    if (partyCheck(target.getPlayer(), false)) {
       player.sendMessage(Text.configHandler(player, plugin.getSettings()
               .getString("config.language.has-party.target",
                       "They're already in the party")));
       return;
     }
 
-    if (isLeader(player)) {
+    if (isLeader(player, false)) {
       if (target.getPlayer() == player) {
         player.sendMessage(Text.configHandler(player, plugin.getSettings()
                 .getString("config.language.party-already-in-party",
@@ -110,7 +102,7 @@ public class PartyCommands extends BaseCommand {
         partyManager.invitePlayer(player, target.getPlayer());
       }
     }
-    else if (!partyCheck(player)) {
+    else if (!partyCheck(player, false)) {
       partyManager.createParty(player);
       if (target.getPlayer() != player) {
         player.sendMessage(Text.configHandler(target.getPlayer(), plugin.getSettings()
@@ -123,7 +115,7 @@ public class PartyCommands extends BaseCommand {
 
   @Subcommand("invites")
   public void onInvites(Player player) {
-    if (partyCheck(player)) {
+    if (partyCheck(player, false)) {
       player.sendMessage(Text.configHandler(player, plugin.getSettings()
               .getString("config.language.has-party.player", "You're already in a party.")));
       return;
@@ -232,7 +224,7 @@ public class PartyCommands extends BaseCommand {
 
   @Subcommand("kick")
   public void onKick(Player player, OfflinePlayer target) {
-    if (!partyCheck(player) || !isLeader(player)) return;
+    if (!partyCheck(player, true) || !isLeader(player, true)) return;
     if (target == player) {
       player.sendMessage(Text.configHandler(player, plugin.getSettings()
               .getString("config.language.party-cannot-kick-self", "You cannot kick yourself")));
@@ -245,13 +237,13 @@ public class PartyCommands extends BaseCommand {
 
   @Subcommand("leave")
   public void onLeave(Player player) {
-    if (!partyCheck(player)) return;
+    if (!partyCheck(player, true)) return;
     partyManager.removePlayer(player, RemoveReason.QUIT);
   }
 
   @Subcommand("promote")
   public void onPromote(Player player, OnlinePlayer target) {
-    if (!partyCheck(player) || !isLeader(player)) return;
+    if (!partyCheck(player, true) || !isLeader(player, true)) return;
 
     if (target.getPlayer() == player) {
       player.sendMessage(Text.configHandler(player, plugin.getSettings()
@@ -265,7 +257,7 @@ public class PartyCommands extends BaseCommand {
 
   @Subcommand("pvp")
   public void onToggleFriendlyFire(Player player) {
-    if (!partyCheck(player) || !isLeader(player)) return;
+    if (!partyCheck(player, true) || !isLeader(player, true)) return;
 
     Party party = partyManager.getParty(player);
     party.setFriendlyFire(!party.getFriendlyFire());
@@ -284,7 +276,7 @@ public class PartyCommands extends BaseCommand {
 
   @Subcommand("toggle|toggleboard")
   public void onToggleScoreboard(Player player, @Optional Boolean mode) {
-    if (!partyCheck(player)) return;
+    if (!partyCheck(player, true)) return;
     Party party = partyManager.getParty(player);
 
     boolean currentMode = party.getMember(player).isShowScoreboard();
@@ -365,16 +357,18 @@ public class PartyCommands extends BaseCommand {
     }
   }
 
-  private boolean isLeader(Player player) {
+  private boolean isLeader(Player player, boolean sendMessage) {
     if (partyManager.isLeader(player)) return true;
+    if (!sendMessage) return false;
     player.sendMessage(Text.configHandler(player, plugin.getSettings()
             .getString("config.language.party-not-leader",
                     "Only the part leader can run this command")));
     return false;
   }
 
-  private boolean partyCheck(Player player) {
+  private boolean partyCheck(Player player, boolean sendMessage) {
     if (partyManager.hasParty(player)) return true;
+    if (!sendMessage) return false;
     player.sendMessage(Text.configHandler(player, plugin.getSettings()
         .getString("config.language.party-no-party",
             "You must to be in a party to use this command.")));
