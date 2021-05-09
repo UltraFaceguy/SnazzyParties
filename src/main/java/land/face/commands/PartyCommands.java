@@ -81,7 +81,7 @@ public class PartyCommands extends BaseCommand {
 
   @Subcommand("invite")
   public void onInvite(Player player, OnlinePlayer target) {
-    if (partyCheck(player, true) || !isLeader(player, true)) return;
+    if (partyCheck(player, false) && !isLeader(player, true)) return;
     if (partyCheck(target.getPlayer(), false)) {
       player.sendMessage(Text.configHandler(player, plugin.getSettings()
               .getString("config.language.has-party.target",
@@ -89,22 +89,22 @@ public class PartyCommands extends BaseCommand {
       return;
     }
 
-    if (isLeader(player, false)) {
-      if (target.getPlayer() == player) {
-        player.sendMessage(Text.configHandler(player, plugin.getSettings()
-                .getString("config.language.party-already-in-party",
-                        "You're already in the party")));
-      }
-      else {
+    if (!partyCheck(player, false)) {
+      partyManager.createParty(player);
+      if (target.getPlayer() != player) {
         player.sendMessage(Text.configHandler(target.getPlayer(), plugin.getSettings()
                 .getString("config.language.party-invited-player",
                         "%player_name% has been invited to your party.")));
         partyManager.invitePlayer(player, target.getPlayer());
       }
     }
-    else if (!partyCheck(player, false)) {
-      partyManager.createParty(player);
-      if (target.getPlayer() != player) {
+    else if (isLeader(player, false)) {
+      if (target.getPlayer() == player) {
+        player.sendMessage(Text.configHandler(player, plugin.getSettings()
+                .getString("config.language.party-already-in-party",
+                        "You're already in the party")));
+      }
+      else {
         player.sendMessage(Text.configHandler(target.getPlayer(), plugin.getSettings()
                 .getString("config.language.party-invited-player",
                         "%player_name% has been invited to your party.")));
