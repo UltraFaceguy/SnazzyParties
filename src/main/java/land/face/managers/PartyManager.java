@@ -357,7 +357,8 @@ public class PartyManager {
   }
 
   public Boolean areInSameParty(Player p1, Player p2) {
-    return getParty(p1.getUniqueId()) == getParty(p2.getUniqueId());
+    Party party1 = getParty(p1.getUniqueId());
+    return party1 != null && party1 == getParty(p2.getUniqueId());
   }
 
   public Scoreboard setupScoreboard(String partyName) {
