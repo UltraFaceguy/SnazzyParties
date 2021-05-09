@@ -67,6 +67,10 @@ public class PartyCommands extends BaseCommand {
               .getString("config.language.has-party.player", "You're already in a party.")));
       return;
     }
+    if (partyName == null) {
+      partyManager.createParty(player);
+      return;
+    }
     partyManager.createParty(player, partyName);
   }
 
