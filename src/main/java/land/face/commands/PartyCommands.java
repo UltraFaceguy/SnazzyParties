@@ -137,13 +137,14 @@ public class PartyCommands extends BaseCommand {
 
   @Subcommand("join|accept")
   public void onJoin(Player player, @Optional String inviteName) {
-    if (partyManager.hasParty(player)) {
+    if (partyCheck(player, false)) {
       player.sendMessage(Text.configHandler(player, plugin.getSettings()
               .getString("config.language.has-party.player", "You're already in a party.")));
+      return;
     }
 
     List<Invitation> list = plugin.getPartyManager().getInvitations().get(player.getUniqueId());
-    if (list.isEmpty()) {
+    if (list == null || list.isEmpty()) {
       player.sendMessage(Text.configHandler(player, plugin.getSettings()
               .getString("config.language.party-no-invite", "You don't have any party invites.")));
       return;
