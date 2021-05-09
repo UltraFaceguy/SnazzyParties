@@ -253,7 +253,7 @@ public class PartyCommands extends BaseCommand {
       return;
     }
 
-    partyManager.promotePlayer(target.getPlayer());
+    if (partyManager.areInSameParty(player, target.getPlayer())) partyManager.promotePlayer(target.getPlayer());
   }
 
   @Subcommand("pvp")
