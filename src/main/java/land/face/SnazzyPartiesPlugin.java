@@ -3,6 +3,8 @@ package land.face;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+
+import co.aikar.commands.BukkitCommandManager;
 import land.face.commands.PartyCommands;
 import land.face.listeners.ChatListener;
 import land.face.listeners.DamageListener;
@@ -56,9 +58,8 @@ public class SnazzyPartiesPlugin extends JavaPlugin {
     OfflineKickerTask kickerTask = new OfflineKickerTask(partyManager);
     kickerTask.runTaskTimer(this, 20L, 100);
 
-    PartyCommands partyCommands = new PartyCommands(this);
-    this.getCommand("party").setExecutor(partyCommands);
-    this.getCommand("party").setTabCompleter(partyCommands);
+    BukkitCommandManager commandManager = new BukkitCommandManager(this);
+    commandManager.registerCommand(new PartyCommands(this, partyManager));
 
     Bukkit.getServer().getLogger().info("Snazzy Parties enabled!");
   }
