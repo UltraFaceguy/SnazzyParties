@@ -79,6 +79,7 @@ public class PartyCommands extends BaseCommand {
     if (isLeader(player, true)) partyManager.disbandParty(partyManager.getParty(player));
   }
 
+  @CommandCompletion("@players")
   @Subcommand("invite")
   public void onInvite(Player player, OnlinePlayer target) {
     if (partyCheck(player, false) && !isLeader(player, true)) return;
@@ -135,6 +136,7 @@ public class PartyCommands extends BaseCommand {
     player.sendMessage(string.substring(0, string.length() - 2));
   }
 
+  @CommandCompletion("@partyInvites")
   @Subcommand("join|accept")
   public void onJoin(Player player, @Optional String inviteName) {
     if (partyCheck(player, false)) {
@@ -176,6 +178,7 @@ public class PartyCommands extends BaseCommand {
     plugin.getPartyManager().addPlayer(invite.getParty(), player);
   }
 
+  @CommandCompletion("@partyInvites")
   @Subcommand("reject|decline")
   public void onReject(Player player, String inviteName) {
     if (partyManager.hasParty(player)) {
@@ -223,6 +226,7 @@ public class PartyCommands extends BaseCommand {
     }
   }
 
+  @CommandCompletion("@partyMembers")
   @Subcommand("kick")
   public void onKick(Player player, OfflinePlayer target) {
     if (!partyCheck(player, true) || !isLeader(player, true)) return;
@@ -242,6 +246,7 @@ public class PartyCommands extends BaseCommand {
     partyManager.removePlayer(player, RemoveReason.QUIT);
   }
 
+  @CommandCompletion("@partyMembers")
   @Subcommand("promote")
   public void onPromote(Player player, OnlinePlayer target) {
     if (!partyCheck(player, true) || !isLeader(player, true)) return;
