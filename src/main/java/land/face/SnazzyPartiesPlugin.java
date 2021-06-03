@@ -71,7 +71,7 @@ public class SnazzyPartiesPlugin extends JavaPlugin {
       CommandSender sender = c.getSender();
       if (sender instanceof Player) {
         Player player = (Player) sender;
-        return partyManager.getInvitations().get(player.getUniqueId())
+        return partyManager.getInvitations(player.getUniqueId())
                 .stream()
                 .map(Invitation::getParty)
                 .map(Party::getLeader)

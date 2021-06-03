@@ -117,6 +117,12 @@ public class PartyManager {
   public Map<UUID, List<Invitation>> getInvitations() {
     return invitations;
   }
+  public List<Invitation> getInvitations(UUID uuid) {
+    return invitations.get(uuid);
+  }
+  public void removeInvitation(UUID uuid, Invitation invitation) {
+    invitations.get(uuid).remove(invitation);
+  }
 
   public void sendPartyMessage(Player player, String message) {
     message = partyChatFormat.replaceFirst(partyChatMessageRegex, message);

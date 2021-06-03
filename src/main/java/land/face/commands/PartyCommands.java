@@ -121,12 +121,12 @@ public class PartyCommands extends BaseCommand {
               .getString("config.language.has-party.player", "You're already in a party.")));
       return;
     }
-    if (partyManager.getInvitations().get(player.getUniqueId()) == null) {
+    if (partyManager.getInvitations(player.getUniqueId()) == null) {
       player.sendMessage(Text.configHandler(player, plugin.getSettings()
               .getString("config.language.party-no-invite", "You don't have any party invites.")));
       return;
     }
-    List<Invitation> list = plugin.getPartyManager().getInvitations().get(player.getUniqueId());
+    List<Invitation> list = plugin.getPartyManager().getInvitations(player.getUniqueId());
     StringBuilder sb = new StringBuilder();
     for (int i = 0; i < list.size(); i++) {
       sb.append("(").append((i + 1)).append(") ")
@@ -145,7 +145,7 @@ public class PartyCommands extends BaseCommand {
       return;
     }
 
-    List<Invitation> list = plugin.getPartyManager().getInvitations().get(player.getUniqueId());
+    List<Invitation> list = plugin.getPartyManager().getInvitations(player.getUniqueId());
     if (list == null || list.isEmpty()) {
       player.sendMessage(Text.configHandler(player, plugin.getSettings()
               .getString("config.language.party-no-invite", "You don't have any party invites.")));
@@ -169,12 +169,12 @@ public class PartyCommands extends BaseCommand {
   }
   private void partyJoin(Player player, Invitation invite) {
     if (!plugin.getPartyManager().isValidInvite(invite)) {
-      plugin.getPartyManager().getInvitations().get(player.getUniqueId()).remove(invite);
+      plugin.getPartyManager().removeInvitation(player.getUniqueId(), invite);
       player.sendMessage(Text.configHandler(player, plugin.getSettings()
               .getString("config.language.party-invite-expired", "Party invite expired")));
       return;
     }
-    plugin.getPartyManager().getInvitations().get(player.getUniqueId()).remove(invite);
+    plugin.getPartyManager().removeInvitation(player.getUniqueId(), invite);
     plugin.getPartyManager().addPlayer(invite.getParty(), player);
   }
 
