@@ -88,6 +88,7 @@ public class SnazzyPartiesPlugin extends JavaPlugin {
         return partyManager.getParty(player.getUniqueId()).getMembers()
                 .stream()
                 .map(PartyMember::getUsername)
+                .filter(s -> !s.equalsIgnoreCase(player.getName()))
                 .collect(Collectors.toList());
       }
       return null;
