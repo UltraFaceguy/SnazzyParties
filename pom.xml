@@ -43,6 +43,10 @@
 
   <repositories>
     <repository>
+      <id>space-faceland-maven</id>
+      <url>https://maven.pkg.jetbrains.space/faceland/p/fl/faceland-maven</url>
+    </repository>
+    <repository>
       <id>jitpack.io</id>
       <url>https://jitpack.io</url>
     </repository>
