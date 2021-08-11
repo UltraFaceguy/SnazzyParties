@@ -29,23 +29,17 @@
 
   <parent>
     <groupId>io.pixeloutlaw</groupId>
-    <artifactId>spigot-plugin-parent</artifactId>
-    <version>1.16.4.0</version>
+    <artifactId>generic-plugin-parent</artifactId>
+    <version>1.17.1.0</version>
   </parent>
 
   <artifactId>SnazzyParties</artifactId>
-  <version>1.1.2</version>
+  <version>1.2.0</version>
   <packaging>jar</packaging>
 
   <name>SnazzyParties</name>
 
   <inceptionYear>2018</inceptionYear>
-
-  <scm>
-    <connection>https://github.com/UltraFaceguy/SnazzyParties.git</connection>
-    <url>https://github.com/UltraFaceguy/SnazzyParties</url>
-    <tag>HEAD</tag>
-  </scm>
 
   <repositories>
     <repository>
@@ -54,7 +48,7 @@
     </repository>
     <repository>
       <id>placeholderapi</id>
-      <url>http://repo.extendedclip.com/content/repositories/placeholderapi/</url>
+      <url>https://repo.extendedclip.com/content/repositories/placeholderapi/</url>
     </repository>
     <repository>
       <id>aikar</id>
@@ -70,7 +64,7 @@
     <dependency>
       <groupId>me.clip</groupId>
       <artifactId>placeholderapi</artifactId>
-      <version>2.10.9</version>
+      <version>2.10.10</version>
       <scope>provided</scope>
     </dependency>
     <dependency>

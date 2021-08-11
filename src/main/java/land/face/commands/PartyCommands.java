@@ -1,12 +1,15 @@
 package land.face.commands;
 
-import java.util.ArrayList;
+import co.aikar.commands.BaseCommand;
+import co.aikar.commands.annotation.CommandAlias;
+import co.aikar.commands.annotation.CommandCompletion;
+import co.aikar.commands.annotation.Default;
+import co.aikar.commands.annotation.HelpCommand;
+import co.aikar.commands.annotation.Optional;
+import co.aikar.commands.annotation.Subcommand;
+import co.aikar.commands.bukkit.contexts.OnlinePlayer;
 import java.util.List;
 import java.util.Objects;
-
-import co.aikar.commands.BaseCommand;
-import co.aikar.commands.annotation.*;
-import co.aikar.commands.bukkit.contexts.OnlinePlayer;
 import land.face.SnazzyPartiesPlugin;
 import land.face.data.Invitation;
 import land.face.data.Party;
@@ -17,8 +20,6 @@ import land.face.utils.Text;
 import me.clip.placeholderapi.PlaceholderAPI;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 @CommandAlias("party|p")
@@ -316,51 +317,6 @@ public class PartyCommands extends BaseCommand {
   @Subcommand("hide|hideboard")
   public void onHideScoreboard(Player player) {
     onToggleScoreboard(player, false);
-  }
-
-  //broken
-  public List<String> onTabComplete(CommandSender sender, Command cmd, String commandLabel, String[] args) {
-    List<String> list = new ArrayList<>();
-
-    Player player = (Player) sender;
-    PartyManager partyManager = plugin.getPartyManager();
-
-    list.add("help");
-
-    if (sender == null) return null;
-
-    if (args.length > 1) {
-      return null;
-    }
-
-    if (partyManager.hasParty(player)) {
-      Party party = partyManager.getParty(player);
-      PartyMember leader = party.getLeader();
-      if (party.getMember(player).isShowScoreboard()) {
-        list.add("hide");
-      } else {
-        list.add("show");
-      }
-      if (leader.getUUID() == player.getUniqueId()) {
-        list.add("pvp");
-        list.add("promote");
-        list.add("kick");
-        list.add("invite");
-        list.add("disband");
-        list.add("leave");
-        list.add("rename");
-        return list;
-      } else {
-        list.add("leave");
-        return list;
-      }
-    } else {
-      list.add("create");
-      list.add("accept");
-      list.add("invite");
-      list.add("invites");
-      return list;
-    }
   }
 
   private boolean isLeader(Player player, boolean sendMessage) {
