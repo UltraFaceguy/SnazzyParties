@@ -117,6 +117,12 @@ public class PartyManager {
   public Map<UUID, List<Invitation>> getInvitations() {
     return invitations;
   }
+  public List<Invitation> getInvitations(UUID uuid) {
+    return invitations.get(uuid);
+  }
+  public void removeInvitation(UUID uuid, Invitation invitation) {
+    invitations.get(uuid).remove(invitation);
+  }
 
   public void sendPartyMessage(Player player, String message) {
     message = partyChatFormat.replaceFirst(partyChatMessageRegex, message);
@@ -357,7 +363,8 @@ public class PartyManager {
   }
 
   public Boolean areInSameParty(Player p1, Player p2) {
-    return getParty(p1.getUniqueId()) == getParty(p2.getUniqueId());
+    Party party1 = getParty(p1.getUniqueId());
+    return party1 != null && party1 == getParty(p2.getUniqueId());
   }
 
   public Scoreboard setupScoreboard(String partyName) {

@@ -3,7 +3,13 @@ package land.face;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
+
+import co.aikar.commands.BukkitCommandManager;
 import land.face.commands.PartyCommands;
+import land.face.data.Invitation;
+import land.face.data.Party;
+import land.face.data.PartyMember;
 import land.face.listeners.ChatListener;
 import land.face.listeners.DamageListener;
 import land.face.listeners.PlayerExitListener;
@@ -14,6 +20,8 @@ import land.face.utils.config.MasterConfiguration;
 import land.face.utils.config.VersionedConfiguration;
 import land.face.utils.config.VersionedSmartYamlConfiguration;
 import org.bukkit.Bukkit;
+import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 import org.bukkit.event.HandlerList;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -56,9 +64,35 @@ public class SnazzyPartiesPlugin extends JavaPlugin {
     OfflineKickerTask kickerTask = new OfflineKickerTask(partyManager);
     kickerTask.runTaskTimer(this, 20L, 100);
 
-    PartyCommands partyCommands = new PartyCommands(this);
-    this.getCommand("party").setExecutor(partyCommands);
-    this.getCommand("party").setTabCompleter(partyCommands);
+    BukkitCommandManager commandManager = new BukkitCommandManager(this);
+    commandManager.registerCommand(new PartyCommands(this, partyManager));
+
+    commandManager.getCommandCompletions().registerCompletion("partyInvites", c -> {
+      CommandSender sender = c.getSender();
+      if (sender instanceof Player) {
+        Player player = (Player) sender;
+        return partyManager.getInvitations(player.getUniqueId())
+                .stream()
+                .map(Invitation::getParty)
+                .map(Party::getLeader)
+                .map(PartyMember::getUsername)
+                .collect(Collectors.toList());
+      }
+      return null;
+    });
+
+    commandManager.getCommandCompletions().registerCompletion("partyMembers", c -> {
+      CommandSender sender = c.getSender();
+      if (sender instanceof Player) {
+        Player player = (Player) sender;
+        return partyManager.getParty(player.getUniqueId()).getMembers()
+                .stream()
+                .map(PartyMember::getUsername)
+                .filter(s -> !s.equalsIgnoreCase(player.getName()))
+                .collect(Collectors.toList());
+      }
+      return null;
+    });
 
     Bukkit.getServer().getLogger().info("Snazzy Parties enabled!");
   }

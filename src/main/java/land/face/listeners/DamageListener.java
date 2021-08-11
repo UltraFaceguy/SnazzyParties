@@ -13,7 +13,7 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 
 public class DamageListener implements Listener {
 
-  private PartyManager manager;
+  private final PartyManager manager;
 
   public DamageListener(PartyManager manager) {
     this.manager = manager;
@@ -28,12 +28,9 @@ public class DamageListener implements Listener {
     if (!(attacker instanceof Player)) {
       return;
     }
-    if (!manager.hasParty((Player) e.getEntity()) || !manager.hasParty((Player) attacker)) {
-      return;
-    }
-    if (manager.areInSameParty((Player) e.getEntity(), (Player) attacker) &&
-            manager.getParty((Player) e.getEntity()).getFriendlyFire()) {
-      e.isCancelled();
+    if (manager.areInSameParty((Player) e.getEntity(), (Player) attacker) && !manager
+        .getParty((Player) e.getEntity()).getFriendlyFire()) {
+      e.setCancelled(true);
     }
   }
 

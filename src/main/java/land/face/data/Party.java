@@ -2,8 +2,12 @@ package land.face.data;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
+
+import land.face.managers.PartyManager;
 import land.face.tasks.PartyTask;
+import land.face.utils.Text;
 import org.bukkit.entity.Player;
 import org.bukkit.scoreboard.Scoreboard;
 
@@ -89,6 +93,7 @@ public class Party {
 
   public void setPartyName(String partyName) {
     this.partyName = partyName;
+    Objects.requireNonNull(scoreboard.getObjective(PartyManager.PARTY_OBJECTIVE)).setDisplayName(Text.colorize(partyName));
   }
 
   public boolean CanMerge() {
