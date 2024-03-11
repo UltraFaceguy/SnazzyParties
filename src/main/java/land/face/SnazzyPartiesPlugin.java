@@ -83,8 +83,7 @@ public class SnazzyPartiesPlugin extends JavaPlugin {
 
     commandManager.getCommandCompletions().registerCompletion("partyMembers", c -> {
       CommandSender sender = c.getSender();
-      if (sender instanceof Player) {
-        Player player = (Player) sender;
+      if (sender instanceof Player player) {
         return partyManager.getParty(player.getUniqueId()).getMembers()
                 .stream()
                 .map(PartyMember::getUsername)

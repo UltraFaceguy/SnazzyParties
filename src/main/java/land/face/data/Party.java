@@ -26,14 +26,15 @@ public class Party {
   private PartyTask partyTask;
 
   private static final int MAX_PLAYERS = 5;
+  private static final List<String> titles = List.of("", "೧", "೨", "೩", "೪", "೫");
 
-  public Party(PartyMember leader, Scoreboard scoreboard, String partyName) {
+  public Party(PartyMember leader, String partyName) {
     this.leader = leader;
     this.friendlyFire = false;
     this.expSharing = false;
     this.lootSharing = false;
-    this.scoreboard = scoreboard;
-    this.partyName = partyName;
+    this.partyName = "\uF808\uF804" + titles.get(1) + "\uF808\uF804";
+    this.scoreboard = PartyManager.setupScoreboard(this.partyName);
     members = new ArrayList<>();
     members.add(leader);
     partyTask = new PartyTask(this);
@@ -91,9 +92,14 @@ public class Party {
     return partyName;
   }
 
+  public void refreshPartyName() {
+    setPartyName("sneed");
+  }
+
   public void setPartyName(String partyName) {
-    this.partyName = partyName;
-    Objects.requireNonNull(scoreboard.getObjective(PartyManager.PARTY_OBJECTIVE)).setDisplayName(Text.colorize(partyName));
+    this.partyName = "\uF808\uF804" + titles.get(members.size()) + "\uF808\uF804";
+    Objects.requireNonNull(scoreboard.getObjective(PartyManager.PARTY_OBJECTIVE))
+        .setDisplayName(this.partyName);
   }
 
   public boolean CanMerge() {

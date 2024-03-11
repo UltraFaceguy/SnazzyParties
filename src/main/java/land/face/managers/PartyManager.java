@@ -1,5 +1,6 @@
 package land.face.managers;
 
+import io.papermc.paper.scoreboard.numbers.NumberFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -26,6 +27,7 @@ import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.scoreboard.DisplaySlot;
 import org.bukkit.scoreboard.Objective;
+import org.bukkit.scoreboard.RenderType;
 import org.bukkit.scoreboard.Scoreboard;
 import org.bukkit.scoreboard.Team;
 
@@ -155,7 +157,7 @@ public class PartyManager {
     if (name.length() - colorLength > 18) {
       name = name.substring(0, 17);
     }
-    Party party = new Party(new PartyMember(player), setupScoreboard(name), name);
+    Party party = new Party(new PartyMember(player), name);
     parties.add(party);
     playerParty.put(player.getUniqueId(), party);
     player.setScoreboard(party.getScoreboard());
@@ -184,6 +186,7 @@ public class PartyManager {
       return false;
     }
     party.getMembers().add(partyMember);
+    party.refreshPartyName();
     playerParty.put(partyMember.getUUID(), party);
     resetScoreboard(party);
     addToScoreboard(Objects.requireNonNull(Bukkit.getPlayer(partyMember.getUUID())));
@@ -201,13 +204,14 @@ public class PartyManager {
       return;
     }
     if (party.getLeader().getUUID().equals(uuid)) {
+      partyAnnounce(party, removeReasonHandler(reason).replace("{name}",
+          party.getMember(uuid).getUsername()));
       promoteNextInLine(party);
     }
-    partyAnnounce(party,
-        removeReasonHandler(reason).replace("{name}", party.getMember(uuid).getUsername()));
-    resetScoreboard(party);
     party.getMembers().remove(party.getMember(uuid));
+    party.refreshPartyName();
     playerParty.remove(uuid);
+    resetScoreboard(party);
     Player player = Bukkit.getPlayer(uuid);
     if (player != null && player.isValid()) {
       player.setScoreboard(defaultBoard);
@@ -215,15 +219,11 @@ public class PartyManager {
   }
 
   private String removeReasonHandler(RemoveReason reason) {
-    switch (reason) {
-      case QUIT:
-        return quit;
-      case KICKED:
-        return kicked;
-      case TIMEOUT:
-        return timeout;
-    }
-    return "Something went horribly wrong, but hey {name} was kicked from your party!";
+    return switch (reason) {
+      case QUIT -> quit;
+      case KICKED -> kicked;
+      case TIMEOUT -> timeout;
+    };
   }
 
   public void invitePlayer(Player cmdSender, Player target) {
@@ -359,6 +359,9 @@ public class PartyManager {
   }
 
   public boolean isValidInvite(Invitation invitation) {
+    if (invitation.getParty() == null || invitation.getParty().getMembers().size() == 0) {
+      return false;
+    }
     return System.currentTimeMillis() - invitation.getTimestamp() < maxInviteMillis;
   }
 
@@ -367,7 +370,7 @@ public class PartyManager {
     return party1 != null && party1 == getParty(p2.getUniqueId());
   }
 
-  public Scoreboard setupScoreboard(String partyName) {
+  public static Scoreboard setupScoreboard(String partyName) {
     Scoreboard scoreboard = Objects.requireNonNull(Bukkit.getScoreboardManager()).getNewScoreboard();
     Objective objective = scoreboard.registerNewObjective(PARTY_OBJECTIVE, "dummy", Text.colorize(partyName));
     objective.setDisplaySlot(DisplaySlot.SIDEBAR);
@@ -405,11 +408,7 @@ public class PartyManager {
       return;
     }
     Scoreboard scoreboard = party.getScoreboard();
-    int i = 16;
-
-    addScoreboardLine(scoreboard, null, borderFormat, i);
-    i--;
-
+    int i = 9;
     for (PartyMember member : party.getMembers()) {
       Player player = Bukkit.getPlayer(member.getUUID());
       boolean validPlayer = player == null || !player.isValid();
@@ -421,15 +420,15 @@ public class PartyManager {
           .replace("{uuid}", member.getUUID().toString());
 
       if (isLeader(member.getUUID())) {
-        actualNameFormat = leaderPrefix + actualNameFormat;
+        actualNameFormat = actualNameFormat.replace("{b}", leaderPrefix);
+      } else {
+        actualNameFormat = actualNameFormat.replace("{b}", "");
       }
       addScoreboardLine(scoreboard, player, actualNameFormat, i);
       i--;
       addScoreboardLine(scoreboard, player, actualInfoFormat, i);
       i--;
     }
-
-    addScoreboardLine(scoreboard, null, borderFormat, i);
   }
 
   private void addScoreboardLine(Scoreboard board, Player player, String text, int lineNumber) {
@@ -452,6 +451,7 @@ public class PartyManager {
       return;
     }
     objective.getScore(getScoreboardKey(lineNumber)).setScore(lineNumber);
+    objective.numberFormat(NumberFormat.blank());
   }
 
   private void resetScoreboard(Party party) {
