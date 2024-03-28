@@ -10,14 +10,13 @@ import org.bukkit.event.player.AsyncPlayerChatEvent;
 
 public class ChatListener implements Listener {
 
-  private SnazzyPartiesPlugin plugin;
-  private String partyChatTrigger;
-  private String partyChatTriggerRegex;
+  private final SnazzyPartiesPlugin plugin;
+  private final String partyChatTrigger;
+  private final String partyChatTriggerRegex;
 
   public ChatListener(SnazzyPartiesPlugin plugin) {
     this.plugin = plugin;
-    partyChatTrigger = plugin.getSettings()
-        .getString("config.party-chat-trigger-prefix", "$");
+    partyChatTrigger = plugin.getSettings().getString("config.party-chat-trigger-prefix", "#");
     partyChatTriggerRegex = Pattern.quote(partyChatTrigger);
   }
 

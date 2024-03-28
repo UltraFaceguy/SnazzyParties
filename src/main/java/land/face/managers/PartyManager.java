@@ -27,7 +27,6 @@ import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.scoreboard.DisplaySlot;
 import org.bukkit.scoreboard.Objective;
-import org.bukkit.scoreboard.RenderType;
 import org.bukkit.scoreboard.Scoreboard;
 import org.bukkit.scoreboard.Team;
 
@@ -53,7 +52,6 @@ public class PartyManager {
   private final String borderFormat;
 
   private final String partyChatFormat;
-  private final String partyChatMessageRegex;
   private final String quit;
   private final String kicked;
   private final String timeout;
@@ -99,9 +97,7 @@ public class PartyManager {
 
     defaultBoard = Objects.requireNonNull(Bukkit.getScoreboardManager()).getMainScoreboard();
 
-    partyChatFormat = plugin.getSettings().getString("config.language.party-chat-format",
-        "&b[Party] %player_name%: #");
-    partyChatMessageRegex = Pattern.quote("#");
+    partyChatFormat = plugin.getSettings().getString("config.language.party-chat-format", "&b[Party] %player_name%: ");
   }
 
   public String getPrefix() {
@@ -127,7 +123,7 @@ public class PartyManager {
   }
 
   public void sendPartyMessage(Player player, String message) {
-    message = partyChatFormat.replaceFirst(partyChatMessageRegex, message);
+    message = partyChatFormat + message;
     for (Player member : getOnlinePlayers(getParty(player))) {
       member.sendMessage(Text.configHandler(player, message));
     }
